@@ -11,7 +11,9 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 产物 | `dist/ipa/CCUPad-unsigned.ipa`（1.66 MB 主程序，含本地网络权限说明） |
+> | 当前版本 | **0.2.0**（tag `v0.2.0-gain-tally`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.2.0-gain-tally)） |
+> | 归档产物 | `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`（461 KB，同目录有 SHA256 清单） |
+> | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
 > 协议层是照 [`ccu-studio`](../ccu-studio) 在真机上验证过的实现逐条复刻的
 > （同一套 HTTP Digest 挑战取法、同一个 `ws://<ip>/linear` 升级写法、同一份 MessagePack 编解码）。
@@ -168,6 +170,8 @@ node tools/publish.mjs 你的用户名/ccupad --create
 4. **回主控台**：推子应该出现了。此时**「试运行」默认是开的** —— 推一次推子，
    日志里会写「试运行：未下发」，设备不受影响。确认映射和方向都对，再到设置里关掉试运行。
 5. 关掉试运行后先在**一台**设备上验证真实下发，再放开批量操作。
+6. **每次批量下发前 App 会自动拍一张增益快照**；推错了就到「设置 → 增益快照与回滚」逐张回滚，
+   或直接按主控台的「撤销上次下发」。快照保留最近 30 张，存的是设备原始值。
 
 ---
 
@@ -177,10 +181,14 @@ node tools/publish.mjs 你的用户名/ccupad --create
 CCUPad/                                <- 仓库根目录
 ├─ .github/workflows/build-ipa.yml     <- 云端编未签名 IPA
 ├─ README.md                           <- 本文档
+├─ CHANGELOG.md                        <- 变更记录（一版一节）
+├─ ROLLBACK.md                         <- 回滚指南：版本点 / 三种回滚方式 / 现场增益回滚
 ├─ CLOUD-BUILD.md                      <- 云端编译 + Windows 侧载保姆级步骤
 ├─ NEXT-STEPS.md                       <- 待办与已知边界
 ├─ tools/push-via-api.mjs              <- 只靠 api.github.com 推送（还能建仓库）
 ├─ tools/publish.mjs                   <- 一条命令：推送 → 云编译 → 下载解压出 IPA
+├─ tools/release.mjs                   <- 发版：校验 → 归档 + 清单 + tag + Release 附件
+├─ tools/fetch-run-errors.mjs          <- 失败时抓取并去重打印编译错误
 └─ CCUPad/                             <- Xcode 工程目录
    ├─ CCUPad.xcodeproj/                <- 已生成，可直接打开
    ├─ tools/generate-xcodeproj.mjs     <- 增删源文件后重新生成工程
@@ -190,11 +198,18 @@ CCUPad/                                <- 仓库根目录
       ├─ App/        CCUPadApp.swift
       ├─ Protocol/   MessagePack · DigestAuth · HTTPClient · WebSocketClient
       ├─ CCU/        CCUSession（会话）· CCUManager（多台总控）
-      ├─ Model/      CCUItem · CCUDevice · ParameterMap · CCUState · AppSettings
+      ├─ Model/      CCUItem · CCUDevice · ParameterMap · CCUState · AppSettings · GainSnapshot
       ├─ Store/      AppStore（UserDefaults）· Keychain（密码）
       ├─ Views/      Dashboard · CCUTile · VerticalFader · GainOverview · Discovery · Devices · Settings · Theme
       └─ Resources/  Assets.xcassets
 ```
+
+> **版本与回滚**：每个发版都是不可变的历史点 —— 独立 tag + `dist/<tag>/` 归档（含 `MANIFEST.txt`：
+> SHA256 / 提交 / IPA 结构校验逐项）+ `E:\harness\_backup` 里的源码归档 + GitHub Release 永久附件。
+> 回滚步骤见 [`ROLLBACK.md`](ROLLBACK.md)，变更历史见 [`CHANGELOG.md`](CHANGELOG.md)。
+>
+> 另有一半是**设备侧**的：App 内会在批量下发前**自动拍增益快照**，可一键退回
+> （见下面第 5 节第 4 步）—— 那是「写错了怎么退」，与软件版本回滚是两件事。
 
 ---
 

@@ -29,10 +29,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const PROJECT_DIR = path.join(HERE, '..');            // CCUPad/CCUPad（Xcode 工程目录）
-const REPO_DIR = path.join(PROJECT_DIR, '..');        // CCUPad（git 仓库根）
-const TOOLS_DIR = path.join(PROJECT_DIR, 'tools');    // 自检脚本所在
+const HERE = path.dirname(fileURLToPath(import.meta.url));   // CCUPad/tools
+const REPO_DIR = path.join(HERE, '..');                      // CCUPad（git 仓库根）
+const PROJECT_DIR = path.join(REPO_DIR, 'CCUPad');           // CCUPad/CCUPad（Xcode 工程目录）
+const TOOLS_DIR = path.join(PROJECT_DIR, 'tools');           // 自检脚本所在（check-*.mjs）
 
 const args = process.argv.slice(2);
 const opt = {};
@@ -45,7 +45,7 @@ const TAG = opt.tag;
 const NOTE = typeof opt.note === 'string' ? opt.note : '';
 const FROM = typeof opt.from === 'string' ? opt.from : path.join(REPO_DIR, 'dist', 'ipa', 'CCUPad-unsigned.ipa');
 const BACKUP_DIR = typeof opt.backup === 'string' ? opt.backup : path.join(REPO_DIR, '..', '_backup');
-const SLUG = typeof opt.repo === 'string' ? opt.repo : 'XinyuCaoSMT/ccupad'.replace('XinyuCaoSMT', 'XinyuCao-SMT');
+const SLUG = typeof opt.repo === 'string' ? opt.repo : 'XinyuCao-SMT/ccupad';
 const TOKEN = process.env.GH_TOKEN;
 
 if (!TAG || TAG === true) {
