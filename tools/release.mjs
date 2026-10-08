@@ -91,7 +91,7 @@ console.log(`  版本号一致：${VERSION}`);
 
 // ---------------------------------------------------------------- 2) 自检（不过不发版）
 if (!opt['skip-checks']) {
-  for (const tool of ['check-sources.mjs', 'check-calls.mjs']) {
+  for (const tool of ['check-sources.mjs', 'check-calls.mjs', 'check-strings.mjs']) {
     const file = path.join(TOOLS_DIR, tool);
     if (!fs.existsSync(file)) continue;
     const r = spawnSync(process.execPath, [file], { cwd: PROJECT_DIR, stdio: 'inherit' });

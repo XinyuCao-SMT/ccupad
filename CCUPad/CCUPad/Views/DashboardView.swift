@@ -63,19 +63,19 @@ struct DashboardView: View {
                 dryRunButton
 
                 actionButton("全部 +\(stepLabel)", systemImage: "plus") {
-                    bulk("把所有机位**已绑定**的增益通道提高 \(stepLabel) dB？") {
+                    bulk(L10n.f("把所有机位已绑定的增益通道提高 %@ dB？", stepLabel)) {
                         manager.adjustAllGains(by: manager.settings.gainStep)
                     }
                 }
 
                 actionButton("全部 −\(stepLabel)", systemImage: "minus") {
-                    bulk("把所有机位**已绑定**的增益通道降低 \(stepLabel) dB？") {
+                    bulk(L10n.f("把所有机位已绑定的增益通道降低 %@ dB？", stepLabel)) {
                         manager.adjustAllGains(by: -manager.settings.gainStep)
                     }
                 }
 
                 actionButton("全部 0 dB", systemImage: "arrow.counterclockwise") {
-                    bulk("把所有机位**已绑定**的增益通道设为 0 dB？") {
+                    bulk(L10n.t("把所有机位已绑定的增益通道设为 0 dB？")) {
                         manager.setAllGains(to: 0)
                     }
                 }
@@ -101,7 +101,7 @@ struct DashboardView: View {
         }
     }
 
-    private func actionButton(_ title: String,
+    private func actionButton(_ title: LocalizedStringKey,
                               systemImage: String,
                               action: @escaping () -> Void) -> some View {
         Button(action: action) {

@@ -18,23 +18,23 @@ enum CCUStatus: Equatable {
 
     var label: String {
         switch self {
-        case .idle: return "未连接"
-        case .connecting: return "连接中"
-        case .loading: return "读取参数中"
-        case .ready: return "已连接"
-        case .failed(let text): return "失败：\(text)"
-        case .closed: return "已断开"
+        case .idle: return L10n.t("未连接")
+        case .connecting: return L10n.t("连接中")
+        case .loading: return L10n.t("读取参数中")
+        case .ready: return L10n.t("已连接")
+        case .failed(let text): return L10n.f("失败：%@", text)
+        case .closed: return L10n.t("已断开")
         }
     }
 
     var shortLabel: String {
         switch self {
-        case .idle: return "待机"
-        case .connecting: return "连接中"
-        case .loading: return "读取中"
-        case .ready: return "在线"
-        case .failed: return "异常"
-        case .closed: return "断开"
+        case .idle: return L10n.t("待机")
+        case .connecting: return L10n.t("连接中")
+        case .loading: return L10n.t("读取中")
+        case .ready: return L10n.t("在线")
+        case .failed: return L10n.t("异常")
+        case .closed: return L10n.t("离线")
         }
     }
 
@@ -76,9 +76,9 @@ struct TallyState: Equatable {
     }
 
     var detail: String {
-        if program { return "播出中" }
-        if preview { return "预览" }
-        return "未上播"
+        if program { return L10n.t("播出中") }
+        if preview { return L10n.t("预览") }
+        return L10n.t("未上播")
     }
 }
 
@@ -204,11 +204,11 @@ struct CCUDeviceState: Identifiable {
     }
 
     var gainSummary: String {
-        if gains.isEmpty { return "未绑定增益" }
+        if gains.isEmpty { return L10n.t("未绑定增益") }
         if gains.count == 1 { return gains[0].valueText }
         let average = gains.reduce(0) { $0 + $1.value } / Double(gains.count)
         let text = average == average.rounded() ? String(Int(average)) : String(format: "%.1f", average)
-        return "\(gains.count) 路 · 均 \(text) dB"
+        return L10n.f("%lld 路 · 均 %@ dB", gains.count, text)
     }
 
     /// 一台设备所有增益通道取平均后的归一化位置，给总览条用。

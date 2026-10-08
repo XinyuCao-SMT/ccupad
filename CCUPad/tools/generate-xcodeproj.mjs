@@ -29,7 +29,7 @@ const sourcesAbs = path.join(rootDir, sourcesDirName);
 //
 // ⚠️ 这个值必须与发版 tag 的版本号一致 —— `tools/release.mjs` 会强制校验，
 //    不一致就拒绝发版（否则 IPA 里写着一个版本号、tag 却是另一个，回滚时对不上）。
-const appVersion = '0.5.0';
+const appVersion = '0.6.0';
 
 if (!fs.existsSync(sourcesAbs)) {
     console.error(`找不到源码目录: ${sourcesAbs}`);
@@ -47,7 +47,9 @@ function nextId() {
 // MARK: - 扫描源码
 
 const SOURCE_EXT = new Set(['.swift', '.metal']);
-const RESOURCE_EXT = new Set(['.xcassets']);
+// .lproj 按「文件夹引用」收进 Resources：Xcode 会把整个目录原样拷进 App 包，
+// 于是 en.lproj/Localizable.strings 正好落在 iOS 找本地化资源的位置上。
+const RESOURCE_EXT = new Set(['.xcassets', '.lproj']);
 
 function scan(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true })
@@ -63,8 +65,9 @@ function scan(dir) {
     for (const entry of entries) {
         const abs = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-            if (entry.name.endsWith('.xcassets')) {
-                files.push({ name: entry.name, abs, ext: '.xcassets', isDir: true });
+            const ext = path.extname(entry.name).toLowerCase();
+            if (RESOURCE_EXT.has(ext)) {
+                files.push({ name: entry.name, abs, ext, isDir: true });
             } else {
                 dirs.push({ name: entry.name, abs, tree: scan(abs) });
             }
@@ -92,6 +95,7 @@ function fileType(ext) {
         case '.swift': return 'sourcecode.swift';
         case '.metal': return 'sourcecode.metal';
         case '.xcassets': return 'folder.assetcatalog';
+        case '.lproj': return 'folder';
         default: return 'text';
     }
 }

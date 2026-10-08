@@ -140,15 +140,15 @@ struct ParameterMap: Codable, Hashable {
         ]
 
         map.gainChannels = [
-            GainBinding(itemName: "ItemMicGainCh1", title: "MIC1 增益",
+            GainBinding(itemName: "ItemMicGainCh1", title: L10n.t("MIC1 增益"),
                         divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
-            GainBinding(itemName: "ItemMicGainCh2", title: "MIC2 增益",
+            GainBinding(itemName: "ItemMicGainCh2", title: L10n.t("MIC2 增益"),
                         divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
         ]
 
         map.tallyPgmItem = "ItemTallyRStatus"
         map.tallyPvwItem = "ItemTallyGStatus"
-        map.note = "HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW）"
+        map.note = L10n.t("HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW）")
         return map
     }
 

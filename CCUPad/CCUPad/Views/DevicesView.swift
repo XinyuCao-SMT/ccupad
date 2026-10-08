@@ -110,8 +110,8 @@ struct DeviceRowView: View {
 
     private var bindingText: String {
         var parts: [String] = []
-        parts.append(map.gainChannels.isEmpty ? "增益未绑定" : "增益 \(map.gainChannels.count) 路")
-        parts.append(map.tallyBound ? "tally 已绑定" : "tally 未绑定")
+        parts.append(map.gainChannels.isEmpty ? L10n.t("增益未绑定") : L10n.f("增益 %lld 路", map.gainChannels.count))
+        parts.append(map.tallyBound ? L10n.t("tally 已绑定") : L10n.t("tally 未绑定"))
         if state.itemCount > 0 { parts.append("\(state.itemCount) 项") }
         if let error = state.lastError, !error.isEmpty { parts.append(error) }
         return parts.joined(separator: " · ")
@@ -191,7 +191,7 @@ struct AddDevicesSheet: View {
                     Button("取消") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("添加 \(hosts.count) 台") { add() }
+                    Button(L10n.f("添加 %lld 台", hosts.count)) { add() }
                         .disabled(hosts.isEmpty)
                 }
             }
@@ -208,13 +208,13 @@ struct AddDevicesSheet: View {
     }
 
     private var previewText: String {
-        guard let first = hosts.first else { return "还没有解析出地址。" }
+        guard let first = hosts.first else { return L10n.t("还没有解析出地址。") }
         let baseValue = Int(base) ?? 100
         let digitValue = Int(digits) ?? 2
         let names = hosts.prefix(3).map {
             DeviceSpecParser.autoName(host: $0, prefix: prefix, base: baseValue, digits: digitValue)
         }
-        var text = "示例：" + names.joined(separator: "、")
+        var text = L10n.t("示例：") + names.joined(separator: "、")
         if hosts.count > 3 { text += " …（共 \(hosts.count) 台）" }
         _ = first
         return text
@@ -224,7 +224,7 @@ struct AddDevicesSheet: View {
         guard let host = hosts.first else { return }
         testing = true
         testResult = nil
-        let suffix = hosts.count > 1 ? "（只测第一台 \(host)）" : ""
+        let suffix = hosts.count > 1 ? L10n.f("（只测第一台 %@）", host) : ""
         manager.testConnection(host: host,
                                port: Int(port) ?? 80,
                                user: user,

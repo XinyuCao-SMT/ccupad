@@ -74,7 +74,7 @@ final class CCUManager: ObservableObject {
     }
 
     func deviceLabel(_ id: UUID) -> String {
-        device(id)?.label ?? "未知设备"
+        device(id)?.label ?? L10n.t("未知设备")
     }
 
     var connectedCount: Int {
@@ -154,8 +154,8 @@ final class CCUManager: ObservableObject {
         if !isSimulated {
             guard let stored = password(for: device.id) else {
                 var state = self.state(device.id)
-                state.status = .failed("没有保存密码")
-                state.lastError = "没有保存密码"
+                state.status = .failed(L10n.t("没有保存密码"))
+                state.lastError = L10n.t("没有保存密码")
                 states[device.id] = state
                 appendLog(device.label, "没有保存密码，无法连接")
                 return
@@ -233,7 +233,7 @@ final class CCUManager: ObservableObject {
     /// 装上 App 就能立刻看到推子、写入校验（待确认 → 已确认）与会跳动的 tally。
     /// 它的存在还有一个诊断价值：真机连不上时，先用它证明「这套代码本身能跑」。
     func addDemoDevice() {
-        let device = CCUDevice(name: "演示机位",
+        let device = CCUDevice(name: L10n.t("演示机位"),
                                host: "demo",
                                port: 80,
                                user: "demo",
@@ -281,11 +281,11 @@ final class CCUManager: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .failure(let error):
-                    completion("❌ 取 Digest 挑战失败：\(error)")
+                    completion(L10n.f("❌ 取 Digest 挑战失败：%@", error))
                 case .success(let response):
                     guard let header = response.headers["www-authenticate"],
                           let challenge = DigestChallenge.parse(header) else {
-                        completion("❌ 端口 \(safePort) 有 HTTP 响应（状态 \(response.status)）但不是 CCU 的 Digest 挑战")
+                        completion(L10n.f("❌ 端口 %@ 有 HTTP 响应（状态 %@）但不是 CCU 的 Digest 挑战", safePort, response.status))
                         return
                     }
                     let auth = challenge.authorization(method: "GET",
@@ -300,14 +300,14 @@ final class CCUManager: ObservableObject {
                         DispatchQueue.main.async {
                             switch second {
                             case .failure(let error):
-                                completion("⚠️ 挑战已取得，但验证请求失败：\(error)")
+                                completion(L10n.f("⚠️ 挑战已取得，但验证请求失败：%@", error))
                             case .success(let verified):
                                 if verified.status == 200 {
-                                    completion("✅ 认证通过（realm=\(challenge.realm)）")
+                                    completion(L10n.f("✅ 认证通过（realm=%@）", challenge.realm))
                                 } else if verified.status == 401 {
-                                    completion("❌ 用户名或密码不对（HTTP 401）")
+                                    completion(L10n.t("❌ 用户名或密码不对（HTTP 401）"))
                                 } else {
-                                    completion("⚠️ 认证返回 HTTP \(verified.status)")
+                                    completion(L10n.f("⚠️ 认证返回 HTTP %@", verified.status))
                                 }
                             }
                         }
@@ -409,9 +409,9 @@ final class CCUManager: ObservableObject {
         if !sources.isEmpty {
             tally.source = sources.joined(separator: "  ")
         } else if map.tallyBound {
-            tally.source = "已绑定但读不到值"
+            tally.source = L10n.t("已绑定但读不到值")
         } else {
-            tally.source = "未绑定"
+            tally.source = L10n.t("未绑定")
         }
         return tally
     }
@@ -547,7 +547,7 @@ final class CCUManager: ObservableObject {
         }
 
         // 换绑定前先拍一张快照，免得之后想退回原值却没有依据
-        captureGainSnapshot(id, reason: "套用实测默认前")
+        captureGainSnapshot(id, reason: L10n.t("套用实测默认前"))
         maps[id] = ParameterMap.hdcu3500Default()
         saveMaps()
         rebuild(id)
@@ -603,7 +603,7 @@ final class CCUManager: ObservableObject {
 
     /// 所有机位一起加 / 减。
     func adjustAllGains(by delta: Double) {
-        captureSnapshotsForAllDevices(reason: "批量 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
+        captureSnapshotsForAllDevices(reason: L10n.f("批量 %@%@ dB", delta >= 0 ? "+" : "", GainChannel.format(delta, unit: "")))
         for device in connectedDevices() {
             guard let state = states[device.id] else { continue }
             for channel in state.gains where channel.writable {
@@ -615,7 +615,7 @@ final class CCUManager: ObservableObject {
 
     /// 所有机位设到同一个值（归零就是这里传 0）。
     func setAllGains(to displayValue: Double) {
-        captureSnapshotsForAllDevices(reason: "批量设为 \(GainChannel.format(displayValue, unit: "dB"))")
+        captureSnapshotsForAllDevices(reason: L10n.f("批量设为 %@ dB", GainChannel.format(displayValue, unit: "")))
         for device in connectedDevices() {
             guard let state = states[device.id] else { continue }
             for channel in state.gains where channel.writable {
@@ -630,7 +630,7 @@ final class CCUManager: ObservableObject {
             appendLog(deviceLabel(id), "未连接，未下发")
             return
         }
-        captureGainSnapshot(id, reason: "整台设为 \(GainChannel.format(displayValue, unit: "dB"))")
+        captureGainSnapshot(id, reason: L10n.f("整台设为 %@ dB", GainChannel.format(displayValue, unit: "")))
         for channel in state.gains where channel.writable {
             setGain(device: id, channel: channel, displayValue: displayValue, commit: true)
         }
@@ -643,7 +643,7 @@ final class CCUManager: ObservableObject {
             appendLog(deviceLabel(id), "未连接，未下发")
             return
         }
-        captureGainSnapshot(id, reason: "整台 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
+        captureGainSnapshot(id, reason: L10n.f("整台 %@%@ dB", delta >= 0 ? "+" : "", GainChannel.format(delta, unit: "")))
         for channel in state.gains where channel.writable {
             setGain(device: id, channel: channel, displayValue: channel.value + delta, commit: true)
         }
@@ -697,7 +697,7 @@ final class CCUManager: ObservableObject {
 
     /// 手动拍一张（放在界面上，操作前想稳妥就按一下）。
     func captureNow(_ id: UUID) {
-        if captureGainSnapshot(id, reason: "手动快照") == nil {
+        if captureGainSnapshot(id, reason: L10n.t("手动快照")) == nil {
             appendLog(deviceLabel(id), "拍不了快照：设备未连接，或这台设备还没绑定增益通道")
         }
     }

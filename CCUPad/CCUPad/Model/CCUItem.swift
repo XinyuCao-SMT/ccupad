@@ -58,9 +58,9 @@ struct CCUItem: Identifiable, Hashable {
 
     /// 不可写时给出**准确**的原因（日志与界面都用它，不要只说「只读」）。
     var writeBlockReason: String? {
-        if isReadOnly { return "设备标记为只读（min == max）" }
-        if !isNumeric { return "当前值不是数值" }
-        if !hasUsableRange { return "设备没给出量程或档位表（例如摄像机未接上时 MIC GAIN 的档位表只有 Null）" }
+        if isReadOnly { return L10n.t("设备标记为只读（min == max）") }
+        if !isNumeric { return L10n.t("当前值不是数值") }
+        if !hasUsableRange { return L10n.t("设备没给出量程或档位表（例如摄像机未接上时 MIC GAIN 的档位表只有 Null）") }
         return nil
     }
 
@@ -75,11 +75,16 @@ struct CCUItem: Identifiable, Hashable {
 
     var isEnumerated: Bool { numericEnumValues != nil }
 
+    /// 「枚举 N 档」。走查表，所以放在模型里而不是视图里。
+    var enumCountText: String {
+        L10n.f("枚举 %lld 档", enumValues?.count ?? 0)
+    }
+
     /// 给界面显示的档位摘要。
     var enumSummary: String {
         guard let raw = enumValues, raw.count > 1 else { return "" }
         let head = raw.prefix(6).map { $0.displayText }.joined(separator: " / ")
-        return raw.count > 6 ? "\(head) …（共 \(raw.count) 档）" : head
+        return raw.count > 6 ? L10n.f("%@ …（共 %lld 档）", head, raw.count) : head
     }
 
     var displayValue: String { value.displayText }
@@ -128,10 +133,10 @@ enum ItemRole: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .gain: return "增益候选"
-        case .tally: return "Tally 候选"
-        case .audio: return "音频相关"
-        case .other: return "其它"
+        case .gain: return L10n.t("增益候选")
+        case .tally: return L10n.t("Tally 候选")
+        case .audio: return L10n.t("音频相关")
+        case .other: return L10n.t("其它")
         }
     }
 }
@@ -195,17 +200,17 @@ enum ItemClassifier {
         }
 
         if looksOut {
-            if body.contains("delay") { return "像是 OSD「AUDIO OUT」页的 DELAY" }
-            if body.contains("level") { return "像是 OSD「AUDIO OUT」页的 LEVEL（电平）" }
-            if body.contains("adjust") { return "像是 OSD「AUDIO OUT」页的 ADJUST（增益调整）" }
-            if body.contains("aes") || body.contains("ebu") { return "像是 OSD「AUDIO OUT」页的 AES/EBU OUT" }
-            if body.contains("analog") { return "像是 OSD「AUDIO OUT」页的 ANALOG OUT" }
-            return "像是 OSD「AUDIO OUT」页"
+            if body.contains("delay") { return L10n.t("像是 OSD「AUDIO OUT」页的 DELAY") }
+            if body.contains("level") { return L10n.t("像是 OSD「AUDIO OUT」页的 LEVEL（电平）") }
+            if body.contains("adjust") { return L10n.t("像是 OSD「AUDIO OUT」页的 ADJUST（增益调整）") }
+            if body.contains("aes") || body.contains("ebu") { return L10n.t("像是 OSD「AUDIO OUT」页的 AES/EBU OUT") }
+            if body.contains("analog") { return L10n.t("像是 OSD「AUDIO OUT」页的 ANALOG OUT") }
+            return L10n.t("像是 OSD「AUDIO OUT」页")
         }
 
-        if body.contains("level") { return "音频电平" }
-        if body.contains("adjust") { return "音频增益调整" }
-        if body.contains("delay") { return "音频延时" }
+        if body.contains("level") { return L10n.t("音频电平") }
+        if body.contains("adjust") { return L10n.t("音频增益调整") }
+        if body.contains("delay") { return L10n.t("音频延时") }
         return nil
     }
 }

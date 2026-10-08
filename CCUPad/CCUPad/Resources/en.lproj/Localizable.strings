@@ -1,0 +1,245 @@
+/* CCUPad 英文界面 —— 键就是源码里的中文原文（SwiftUI 的 LocalizedStringKey）。
+   中文设备不需要 zh 资源：找不到对应语言时系统会直接显示键本身，也就是中文。
+   切换方式：iPad「设置 → CCUPad → 首选语言 → English」（iOS 13+ 可按 App 单独设语言），
+   或把系统语言改成 English。 */
+
+/* ── 主框架 ── */
+"主控台" = "Dashboard";
+"参数发现" = "Parameters";
+"设备" = "Devices";
+"设置" = "Settings";
+
+/* ── 主控台 ── */
+"连接全部" = "Connect All";
+"全部断开" = "Disconnect All";
+"全部 +%@" = "All +%@";
+"全部 −%@" = "All −%@";
+"全部 0 dB" = "All 0 dB";
+"撤销上次下发" = "Undo Last Change";
+"收起其他项目" = "Hide Advanced";
+"试运行：开" = "Dry Run: ON";
+"试运行：关" = "Dry Run: OFF";
+"确认批量下发" = "Confirm Bulk Write";
+"下发" = "Write";
+"先添加 CCU" = "Add a CCU first";
+"到「设备」页填 IP（支持 10.205.1.101-108 与逗号混写）、用户名和密码，再回来点「连接全部」。" = "Go to Devices, enter the IPs (ranges like 10.205.1.101-108 and comma-separated lists are fine), the user name and password, then come back and tap Connect All.";
+"连上之后，音频增益与 tally 需要到「参数发现」页绑定到具体参数。索尼没有公开 CCU 的完整参数名表，所以这台 App 不猜名字 —— 它把候选挑出来，由你在真机上确认。" = "Audio gain and tally are bound to concrete parameters on the Parameters page. Sony publishes no complete parameter name table, so this app does not guess names — it narrows the candidates and you confirm them on real hardware.";
+
+/* ── 总览条 ── */
+"全部机位增益总览" = "All Channels · Gain Overview";
+"未绑定" = "Not bound";
+"还没有设备。到「设备」页添加 CCU（支持 10.205.1.101-108 这种范围写法）。" = "No devices yet. Add CCUs on the Devices page (ranges like 10.205.1.101-108 work).";
+
+/* ── 设备格子 ── */
+"未绑定增益通道" = "No gain channels bound";
+"到「参数发现」页把设备上的音频增益项绑成通道；也可以先让 App 按名字挑一遍。" = "Bind audio gain items as channels on the Parameters page, or let the app pick candidates by name first.";
+"自动绑定这台设备" = "Auto-bind This Device";
+"正在调整，请稍等" = "Adjusting, please wait…";
+
+/* ── 设备页 ── */
+"还没有设备。点右上角 + 添加 CCU，或先加一台演示机位（不需要任何硬件）。" = "No devices yet. Tap + to add a CCU, or add a demo unit (no hardware needed).";
+"添加 CCU…" = "Add CCU…";
+"添加演示机位" = "Add Demo Unit";
+"连接" = "Connect";
+"断开" = "Disconnect";
+"地址" = "Address";
+"IP / 范围 / 列表" = "IP / range / list";
+"端口" = "Port";
+"写法：10.205.1.101 ｜ 10.205.1.101-108 ｜ 逗号混写 10.205.1.101-104, 10.205.1.111" = "Forms: 10.205.1.101 ｜ 10.205.1.101-108 ｜ comma-separated 10.205.1.101-104, 10.205.1.111";
+"认证" = "Authentication";
+"用户名" = "User name";
+"密码" = "Password";
+"密码存进 iOS Keychain，不写进设置文件、不进日志。" = "The password is stored in the iOS Keychain — never in settings files, never in logs.";
+"机位命名" = "Camera Naming";
+"前缀" = "Prefix";
+"编号基准（末段 − 基准 = 机位号）" = "Number base (last octet − base = camera no.)";
+"编号位数" = "Number padding";
+"测试中…" = "Testing…";
+"测试连接（只读，不下发任何设置）" = "Test Connection (read-only, writes nothing)";
+"添加 CCU" = "Add CCU";
+"无法添加" = "Cannot Add";
+"好" = "OK";
+"标识" = "Identity";
+"机位名" = "Camera name";
+"新密码（留空表示不修改）" = "New password (leave empty to keep)";
+"删除这台设备" = "Delete This Device";
+"编辑设备" = "Edit Device";
+"保存" = "Save";
+
+/* ── 参数发现页 ── */
+"提示" = "Notice";
+"请选择设备" = "Choose a device";
+"按参数名搜索，例如 audio / gain / tally" = "Search parameter names, e.g. audio / gain / tally";
+"全部" = "All";
+"增益候选" = "Gain candidates";
+"Tally 候选" = "Tally candidates";
+"音频相关" = "Audio-related";
+"只显示可写" = "Writable only";
+"实时刷新：开" = "Live refresh: ON";
+"实时刷新：关" = "Live refresh: OFF";
+"已按参数名挑了一遍候选。请检查列表里的绑定是否符合预期 —— 自动识别只是起点，tally 一定要在真机上核对。" = "Candidates were picked by parameter name. Check the bindings below — auto-detection is only a starting point; always verify tally on real hardware.";
+"套用实测默认" = "Apply Verified Defaults";
+"导出参数清单" = "Export Parameter List";
+"只读" = "read-only";
+"不可写（无量程/档位）" = "not writable (no range/options)";
+"已绑增益" = "bound as gain";
+"已绑 tally" = "bound as tally";
+"设为增益通道…" = "Bind as Gain Channel…";
+"设为 Tally PGM" = "Bind as Tally PGM";
+"设为 Tally PVW" = "Bind as Tally PVW";
+"解除增益绑定" = "Unbind Gain";
+"解除 tally 绑定" = "Unbind Tally";
+"没有可导出的参数。先在主控台连接这台设备，等状态变成「已连接」。" = "Nothing to export. Connect this device from the Dashboard first and wait until it shows Connected.";
+"设备参数" = "Device Parameter";
+"参数名" = "Name";
+"参数 ID" = "ID";
+"类型" = "Type";
+"当前值" = "Value";
+"范围" = "Range";
+"通道设置" = "Channel Settings";
+"通道名" = "Channel name";
+"除数" = "Divisor";
+"单位" = "Unit";
+"这项是枚举型" = "This item is enumerated";
+"设备对这项只接受固定档位 —— 而且 min/max 报的是索引范围，不能当量程用。推子、± 按钮与批量操作都会吸附到最近的合法档位。" = "The device only accepts fixed positions here, and its min/max are index bounds — not a usable range. The fader, the ± buttons and bulk actions all snap to the nearest legal position.";
+"除数怎么定" = "Choosing the divisor";
+"设备的音频增益常常不是「dB」，而是某个内部步进。若以 0.1 dB 为单位，原始值 60 表示 6.0 dB —— 这时除数填 10。" = "Audio gain is often reported in an internal step, not in dB. If the unit is 0.1 dB, a raw 60 means 6.0 dB — set the divisor to 10.";
+"拿不准就先留 1，绑定后在主控台看数字是否合理，再回来改（改除数不会写设备）。" = "When unsure, leave it at 1; after binding, check the Dashboard to see whether the number looks right, then come back and change it (changing the divisor writes nothing to the device).";
+"绑定增益通道" = "Bind Gain Channel";
+"绑定" = "Bind";
+
+/* ── 设置页 ── */
+"试运行（只显示，不下发）" = "Dry run (show only, write nothing)";
+"拖动推子时实时下发" = "Write continuously while dragging";
+"批量操作前二次确认" = "Confirm before bulk writes";
+"推子步进" = "Fader step";
+"默认开「试运行」：所有操作都会照常走一遍并写进日志，但一个字节都不会发给设备。确认没问题再关掉。" = "Dry run is on by default: every action runs its normal path and is logged, but not a single byte is sent to a device. Turn it off once you are satisfied.";
+"断线自动重连" = "Reconnect automatically";
+"参数映射" = "Parameter Mapping";
+"还没有设备" = "No devices yet";
+"增益快照与回滚" = "Gain Snapshots & Rollback";
+"还没有快照。批量下发前会自动拍一张（试运行不拍），也可以在主控台按「拍快照」。" = "No snapshots yet. One is captured automatically before every bulk write (not in dry run). You can also capture one from the Dashboard.";
+"回滚" = "Roll back";
+"撤销上一次下发" = "Undo Last Write";
+"清空全部快照" = "Clear All Snapshots";
+"日志" = "Log";
+"清空日志" = "Clear Log";
+"关于" = "About";
+"协议：HTTP Digest（MD5 / qop=auth）+ ws://<ip>/linear + MessagePack，与 ccu-studio 在 HDCU-3500 / 3100 上验证过的实现一致。" = "Protocol: HTTP Digest (MD5 / qop=auth) + ws://<ip>/linear + MessagePack, matching the implementation verified on HDCU-3500 / 3100 by ccu-studio.";
+"前提：iPad 与 CCU 在同一局域网、CCU 管理口开放 80 端口；首次连接时系统会弹「本地网络」权限，必须允许，否则数据包会被静默丢弃（表现为一直连不上、还没有报错）。" = "Requirements: the iPad and the CCUs share a LAN, and port 80 is open on the CCU. On first connect iOS asks for Local Network permission — you must allow it, otherwise packets are dropped silently (it just never connects, with no error).";
+"参数名：索尼没有公开 CCU 的完整参数名表，所以增益与 tally 都必须在「参数发现」页对着真机绑定一次。" = "Parameter names: Sony publishes no complete CCU parameter table, so gain and tally are bound once on the Parameters page against real hardware.";
+"安全：关掉「试运行」后，推子会真的写进 CCU。建议先只在一台设备上验证。" = "Safety: once dry run is off, the faders really write to the CCUs. Validate on a single device first.";
+
+/* ── 安全 / 锁定 ── */
+"安全：锁定其他项目" = "Security: Lock Advanced Area";
+"管理密码" = "Admin password";
+"输入后才能看到「参数发现 / 设备 / 设置」三个页。解锁状态不会保留到下次启动。" = "Enter it to reveal the Parameters, Devices and Settings tabs. The unlocked state is not kept across launches.";
+"解锁其他项目" = "Unlock Advanced Area";
+"取消" = "Cancel";
+"解锁" = "Unlock";
+"已设置管理密码。" = "An admin password is set.";
+"还没有管理密码。「锁定其他项目」只有在设置密码之后才能打开 —— 否则锁上就进不来了。" = "No admin password yet. The lock can only be enabled after a password is set — otherwise you could lock yourself out.";
+"设置 / 修改管理密码" = "Set / change admin password";
+"再输入一遍" = "Repeat password";
+"保存管理密码" = "Save Admin Password";
+"锁定「其他项目」（只留主控台）" = "Lock the advanced area (Dashboard only)";
+"清除管理密码" = "Clear Admin Password";
+"已清除管理密码，锁定也已关闭" = "Admin password cleared; the lock is off";
+"两次输入不一致" = "The two entries do not match";
+"密码太短（至少 4 位）" = "Password too short (at least 4 characters)";
+"已保存管理密码" = "Admin password saved";
+"保存失败（Keychain 写入被拒绝）" = "Save failed (Keychain refused the write)";
+
+/* ── 设置页里带插值的两行（%lld = 整数） ── */
+"重连间隔 %lld 秒" = "Reconnect every %lld s";
+"参数列表最多显示 %lld 行" = "Show at most %lld parameter rows";
+
+/* ── 连接状态 / tally（这些是模型算出来的，代码里用 L10n.t 查表） ── */
+"未连接" = "Not connected";
+"连接中" = "Connecting";
+"读取参数中" = "Reading parameters";
+"已连接" = "Connected";
+"失败：%@" = "Failed: %@";
+"已断开" = "Disconnected";
+"待机" = "Idle";
+"读取中" = "Reading";
+"在线" = "Online";
+"异常" = "Error";
+"离线" = "Offline";
+"播出中" = "On air";
+"预览" = "Preview";
+"未上播" = "Off air";
+"未绑定增益" = "No gain bound";
+"%lld 路 · 均 %@ dB" = "%lld channels · avg %@ dB";
+
+/* ── 参数发现：归类与提示 ── */
+"其它" = "Other";
+"音频电平" = "Audio level";
+"音频增益调整" = "Audio gain adjust";
+"音频延时" = "Audio delay";
+"像是 OSD「AUDIO OUT」页的 DELAY" = "Looks like DELAY on the OSD AUDIO OUT page";
+"像是 OSD「AUDIO OUT」页的 LEVEL（电平）" = "Looks like LEVEL on the OSD AUDIO OUT page";
+"像是 OSD「AUDIO OUT」页的 ADJUST（增益调整）" = "Looks like ADJUST on the OSD AUDIO OUT page";
+"像是 OSD「AUDIO OUT」页的 AES/EBU OUT" = "Looks like AES/EBU OUT on the OSD AUDIO OUT page";
+"像是 OSD「AUDIO OUT」页的 ANALOG OUT" = "Looks like ANALOG OUT on the OSD AUDIO OUT page";
+"像是 OSD「AUDIO OUT」页" = "Looks like the OSD AUDIO OUT page";
+"枚举 %lld 档" = "%lld options";
+"档位：%@" = "Options: %@";
+"命中 %lld 项 · 共 %lld 项" = "%lld matches of %lld items";
+"命中 %lld 项 · 共 %lld 项 · 只显示前 %lld 项" = "%lld matches of %lld items · showing the first %lld";
+"请选择一台设备。" = "Choose a device.";
+"这台设备还没有读到参数。回主控台点「连接全部」，等状态变成「已连接」再回来。" = "No parameters read from this device yet. Go back to the Dashboard, tap Connect All and wait until it shows Connected.";
+"没有匹配的参数。换个关键词，或把筛选切回「全部」。" = "No matching parameters. Try another keyword, or switch the filter back to All.";
+"还没有设备。先到「设备」页添加 CCU，回主控台连接后再来这里绑定参数。" = "No devices yet. Add a CCU on the Devices page, connect it from the Dashboard, then come back here to bind parameters.";
+"已把 %@ 绑为 tally %@。若这台设备用位图表示 tally，就把 PGM 与 PVW 绑同一个参数，再到「设置」里调阈值。" = "Bound %@ as tally %@. If this device reports tally as a bitmap, bind PGM and PVW to the same parameter and adjust the threshold in Settings.";
+"已导出 %@。在「文件」App → 本应用 里能找到它，可以直接发回给开发核对参数名。" = "Exported %@. Find it in the Files app under this app and send it back to cross-check parameter names.";
+"已套用 HDCU 实测默认：话筒增益 2 路（5 档）+ tally PGM/PVW。\n换绑定前会自动拍一张增益快照，可在设置里回滚。" = "Applied the HDCU verified defaults: mic gain ×2 (5 positions) + tally PGM/PVW.\nA gain snapshot is captured before rebinding; you can roll it back in Settings.";
+"设备标记为只读（min == max）" = "The device marks this read-only (min == max)";
+"当前值不是数值" = "The current value is not numeric";
+"设备没给出量程或档位表（例如摄像机未接上时 MIC GAIN 的档位表只有 Null）" = "The device gave no range or option list (e.g. MIC GAIN offers only Null when no camera is attached)";
+"%@ …（共 %lld 档）" = "%@ … (%lld options)";
+
+/* ── 设备与机位 ── */
+"未知设备" = "Unknown device";
+"没有保存密码" = "No password saved";
+"演示机位" = "Demo Unit";
+"MIC1 增益" = "MIC1 Gain";
+"MIC2 增益" = "MIC2 Gain";
+"HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW）" = "HDCU3500 verified defaults (mic gain, 5 positions; R=PGM, G=PVW)";
+"增益未绑定" = "No gain bound";
+"增益 %lld 路" = "%lld gain channels";
+"tally 已绑定" = "tally bound";
+"tally 未绑定" = "tally not bound";
+"添加 %lld 台" = "Add %lld";
+"还没有解析出地址。" = "No address parsed yet.";
+"示例：" = "Examples: ";
+"（只测第一台 %@）" = " (testing the first one only: %@)";
+"在线 %lld/%lld" = "Online %lld/%lld";
+"播出 %lld" = "On air %lld";
+"%lld 项" = "%lld items";
+
+/* ── 连接测试结果 ── */
+"❌ 取 Digest 挑战失败：%@" = "❌ Could not get a Digest challenge: %@";
+"❌ 端口 %@ 有 HTTP 响应（状态 %@）但不是 CCU 的 Digest 挑战" = "❌ Port %@ answered HTTP %@ but not with a CCU Digest challenge";
+"⚠️ 挑战已取得，但验证请求失败：%@" = "⚠️ Challenge received, but the verification request failed: %@";
+"✅ 认证通过（realm=%@）" = "✅ Authenticated (realm=%@)";
+"❌ 用户名或密码不对（HTTP 401）" = "❌ Wrong user name or password (HTTP 401)";
+"⚠️ 认证返回 HTTP %@" = "⚠️ Authentication returned HTTP %@";
+
+/* ── 快照与批量 ── */
+"已绑定但读不到值" = "Bound, but no value readable";
+"手动快照" = "Manual snapshot";
+"套用实测默认前" = "Before applying verified defaults";
+"批量 %@%@ dB" = "Bulk %@%@ dB";
+"批量设为 %@ dB" = "Bulk set to %@ dB";
+"整台设为 %@ dB" = "Device set to %@ dB";
+"整台 %@%@ dB" = "Device %@%@ dB";
+"把所有机位已绑定的增益通道提高 %@ dB？" = "Raise every bound gain channel on all cameras by %@ dB?";
+"把所有机位已绑定的增益通道降低 %@ dB？" = "Lower every bound gain channel on all cameras by %@ dB?";
+"把所有机位已绑定的增益通道设为 0 dB？" = "Set every bound gain channel on all cameras to 0 dB?";
+"最近导出：%@" = "Last export: %@";
+"PGM 未绑定" = "PGM not bound";
+"阈值 %@" = "Threshold %@";
+"（取反）" = " (inverted)";
+"%lld 路 · %@" = "%lld channels · %@";
+

@@ -43,9 +43,9 @@ struct GainOverviewView: View {
     }
 
     private var summary: String {
-        var parts = ["在线 \(manager.connectedCount)/\(manager.devices.count)"]
+        var parts = [L10n.f("在线 %lld/%lld", manager.connectedCount, manager.devices.count)]
         if manager.boundTallyCount > 0 {
-            parts.append("播出 \(manager.programCount)")
+            parts.append(L10n.f("播出 %lld", manager.programCount))
         } else {
             parts.append("tally 未绑定")
         }

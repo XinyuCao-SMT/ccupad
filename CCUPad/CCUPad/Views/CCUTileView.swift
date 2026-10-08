@@ -57,7 +57,7 @@ struct CCUTileView: View {
             parts.append(state.systemName)
         }
         if !state.model.isEmpty { parts.append(state.model) }
-        if state.itemCount > 0 { parts.append("\(state.itemCount) 项") }
+        if state.itemCount > 0 { parts.append(L10n.f("%lld 项", state.itemCount)) }
         return parts.joined(separator: " · ")
     }
 
@@ -129,6 +129,14 @@ struct CCUTileView: View {
                 .font(.caption)
                 .foregroundStyle(Color.secondary)
                 .lineLimit(1)
+
+            // 有通道还在等设备确认时，格子底部也提示一下（列被横向滚动时也看得见）
+            if state.hasPendingWrite {
+                Text("正在调整，请稍等")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.warning)
+                    .lineLimit(1)
+            }
 
             Spacer(minLength: 4)
 

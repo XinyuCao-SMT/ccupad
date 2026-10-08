@@ -51,12 +51,12 @@ struct SettingsView: View {
         Section("连接") {
             Toggle("断线自动重连", isOn: boolBinding(\.autoReconnect))
 
-            Stepper("重连间隔 \(Int(manager.settings.reconnectInterval)) 秒",
+            Stepper(L10n.f("重连间隔 %lld 秒", Int(manager.settings.reconnectInterval)),
                     value: doubleBinding(\.reconnectInterval),
                     in: 2...60,
                     step: 1)
 
-            Stepper("参数列表最多显示 \(manager.settings.discoveryRowLimit) 行",
+            Stepper(L10n.f("参数列表最多显示 %lld 行", manager.settings.discoveryRowLimit),
                     value: intBinding(\.discoveryRowLimit),
                     in: 50...2000,
                     step: 50)
@@ -97,13 +97,15 @@ struct SettingsView: View {
         if let pgm = map.tallyPgmItem {
             parts.append("PGM ← \(pgm)")
         } else {
-            parts.append("PGM 未绑定")
+            parts.append(L10n.t("PGM 未绑定"))
         }
         if let pvw = map.tallyPvwItem {
             parts.append("PVW ← \(pvw)")
         }
         if map.tallyBound {
-            parts.append("阈值 \(map.tallyThreshold)\(map.tallyInverted ? " 取反" : "")")
+            var thresholdText = L10n.f("阈值 %@", String(map.tallyThreshold))
+            if map.tallyInverted { thresholdText += L10n.t("（取反）") }
+            parts.append(thresholdText)
         }
         if !map.note.isEmpty { parts.append(map.note) }
         return parts.joined(separator: " · ")
@@ -174,7 +176,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section("关于") {
-            Text("CCUPad 0.5.0")
+            Text("CCUPad 0.6.0")
 
             Text("协议：HTTP Digest（MD5 / qop=auth）+ ws://<ip>/linear + MessagePack，与 ccu-studio 在 HDCU-3500 / 3100 上验证过的实现一致。")
                 .font(.caption2)

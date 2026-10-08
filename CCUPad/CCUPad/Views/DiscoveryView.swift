@@ -118,7 +118,7 @@ struct DiscoveryView: View {
         }
     }
 
-    private func chip(_ title: String, active: Bool, action: @escaping () -> Void) -> some View {
+    private func chip(_ title: LocalizedStringKey, active: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
                 .font(.caption)
@@ -142,7 +142,7 @@ struct DiscoveryView: View {
             Button("自动绑定这台设备") {
                 if let id = activeDevice {
                     manager.autoBind(id)
-                    message = "已按参数名挑了一遍候选。请检查列表里的绑定是否符合预期 —— 自动识别只是起点，tally 一定要在真机上核对。"
+                    message = L10n.t("已按参数名挑了一遍候选。请检查列表里的绑定是否符合预期 —— 自动识别只是起点，tally 一定要在真机上核对。")
                 }
             }
             .buttonStyle(.bordered)
@@ -151,7 +151,7 @@ struct DiscoveryView: View {
             Button("套用实测默认") {
                 if let id = activeDevice {
                     manager.applyVerifiedDefaults(id)
-                    message = "已套用 HDCU 实测默认：话筒增益 2 路（5 档）+ tally PGM/PVW。\n换绑定前会自动拍一张增益快照，可在设置里回滚。"
+                    message = L10n.t("已套用 HDCU 实测默认：话筒增益 2 路（5 档）+ tally PGM/PVW。\n换绑定前会自动拍一张增益快照，可在设置里回滚。")
                 }
             }
             .buttonStyle(.bordered)
@@ -176,7 +176,7 @@ struct DiscoveryView: View {
     @ViewBuilder
     private var listArea: some View {
         if manager.devices.isEmpty {
-            placeholder("还没有设备。先到「设备」页添加 CCU，回主控台连接后再来这里绑定参数。")
+            placeholder(L10n.t("还没有设备。先到「设备」页添加 CCU，回主控台连接后再来这里绑定参数。"))
         } else if rows.isEmpty {
             placeholder(emptyListHint)
         } else {
@@ -220,7 +220,7 @@ struct DiscoveryView: View {
                     Text("id \(item.numericId)")
                     Text(item.itemType)
                     if !item.rangeText.isEmpty { Text(item.rangeText) }
-                    if item.isEnumerated { Text("枚举 \(item.enumValues?.count ?? 0) 档") }
+                    if item.isEnumerated { Text(item.enumCountText) }
                     if item.isReadOnly { Text("只读") }
                     if !item.isReadOnly && !item.isWritable { Text("不可写（无量程/档位）").foregroundStyle(Theme.warning) }
                     if boundGain { Text("已绑增益").foregroundStyle(Theme.gainFill) }
@@ -283,7 +283,7 @@ struct DiscoveryView: View {
     private func bindTally(_ item: CCUItem, _ role: CCUManager.TallyRole) {
         guard let id = activeDevice else { return }
         manager.bindTally(device: id, itemName: item.name, role: role)
-        message = "已把 \(item.name) 绑为 tally \(role.label)。若这台设备用位图表示 tally，就把 PGM 与 PVW 绑同一个参数，再到「设置」里调阈值。"
+        message = L10n.f("已把 %@ 绑为 tally %@。若这台设备用位图表示 tally，就把 PGM 与 PVW 绑同一个参数，再到「设置」里调阈值。", item.name, role.label)
     }
 
     private func unbindGain(_ item: CCUItem) {
@@ -304,9 +304,9 @@ struct DiscoveryView: View {
     private func exportInventory() {
         guard let id = activeDevice else { return }
         if let name = manager.exportInventory(id) {
-            message = "已导出 \(name)。在「文件」App → 本应用 里能找到它，可以直接发回给开发核对参数名。"
+            message = L10n.f("已导出 %@。在「文件」App → 本应用 里能找到它，可以直接发回给开发核对参数名。", name)
         } else {
-            message = "没有可导出的参数。先在主控台连接这台设备，等状态变成「已连接」。"
+            message = L10n.t("没有可导出的参数。先在主控台连接这台设备，等状态变成「已连接」。")
         }
     }
 
@@ -335,7 +335,7 @@ struct DiscoveryView: View {
                         Text("设备对这项只接受固定档位 —— 而且 min/max 报的是索引范围，不能当量程用。推子、± 按钮与批量操作都会吸附到最近的合法档位。")
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
-                        Text("档位：\(item.enumSummary)")
+                        Text(L10n.f("档位：%@", item.enumSummary))
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
                     }
@@ -375,7 +375,7 @@ struct DiscoveryView: View {
 
     // MARK: - 派生数据
 
-    private func infoRow(_ title: String, _ value: String) -> some View {
+    private func infoRow(_ title: LocalizedStringKey, _ value: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text(title)
             Spacer(minLength: 8)
@@ -420,17 +420,17 @@ struct DiscoveryView: View {
                                                  writableOnly: writableOnly)
         let total = manager.state(id).itemCount
         if matched > manager.settings.discoveryRowLimit {
-            return "命中 \(matched) 项 · 共 \(total) 项 · 只显示前 \(manager.settings.discoveryRowLimit) 项"
+            return L10n.f("命中 %lld 项 · 共 %lld 项 · 只显示前 %lld 项", matched, total, manager.settings.discoveryRowLimit)
         }
-        return "命中 \(matched) 项 · 共 \(total) 项"
+        return L10n.f("命中 %lld 项 · 共 %lld 项", matched, total)
     }
 
     private var emptyListHint: String {
-        guard let id = activeDevice else { return "请选择一台设备。" }
+        guard let id = activeDevice else { return L10n.t("请选择一台设备。") }
         if manager.state(id).itemCount == 0 {
-            return "这台设备还没有读到参数。回主控台点「连接全部」，等状态变成「已连接」再回来。"
+            return L10n.t("这台设备还没有读到参数。回主控台点「连接全部」，等状态变成「已连接」再回来。")
         }
-        return "没有匹配的参数。换个关键词，或把筛选切回「全部」。"
+        return L10n.t("没有匹配的参数。换个关键词，或把筛选切回「全部」。")
     }
 
     private var messageBinding: Binding<Bool> {

@@ -155,7 +155,10 @@ function declarationLabels(params) {
     if (!colonMatch) continue;
     const external = colonMatch[1];
     const hasDefault = /=\s*[^=]/.test(cleaned.slice(colonMatch[0].length)) || /=$/.test(cleaned);
-    labels.push({ label: external === '_' ? null : external, hasDefault, raw: cleaned });
+    // 变参（`_ arguments: CVarArg...`）能接任意多个实参，校验时必须特殊对待，
+    // 否则 L10n.f("…%@…", a, b) 这类调用会被误报成「标签不匹配」。
+    const isVariadic = /\.\.\.\s*$/.test(cleaned);
+    labels.push({ label: external === '_' ? null : external, hasDefault, raw: cleaned, isVariadic });
   }
   return labels;
 }
@@ -247,7 +250,10 @@ for (const file of parsed) {
         else if (colonMatch) label = colonMatch[1];
         if (label === '_') label = null;
         const rest = cleaned.slice(cleaned.indexOf(':') + 1);
-        return { label, hasDefault: /(^|[^=<>!])=([^=]|$)/.test(rest) };
+        // 变参（`_ arguments: CVarArg...`）能接任意多个实参，必须标记出来，
+        // 否则 L10n.f("…%@…", a, b) 这类调用会被误报成「标签不匹配」。
+        const isVariadic = /\.\.\.\s*$/.test(cleaned);
+        return { label, hasDefault: /(^|[^=<>!])=([^=]|$)/.test(rest), isVariadic };
       });
       addMember(typeName, fm[1], { kind: 'func', labels, file: file.rel });
       if (isProtocol) {
@@ -393,13 +399,15 @@ function labelsCompatible(callLabels, declLabels, hasTrailingClosure, argSegment
     }
     if (found < 0) return false;
     usedIndexes.push(found);
-    cursor = found + 1;
+    // 命中变参时游标停在它身上：后面所有实参都归它
+    cursor = declLabels[found].isVariadic ? found : found + 1;
   }
 
   // 未提供的、且没有默认值的参数：只允许是末尾的闭包参数（尾随闭包写法）
   for (let i = 0; i < declLabels.length; i += 1) {
     if (usedIndexes.includes(i)) continue;
     if (declLabels[i].hasDefault) continue;
+    if (declLabels[i].isVariadic) continue;   // 变参可以不传
     if (hasTrailingClosure && i >= declLabels.length - 1) continue;
     return false;
   }

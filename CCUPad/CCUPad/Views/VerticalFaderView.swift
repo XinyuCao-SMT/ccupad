@@ -46,6 +46,16 @@ struct VerticalFaderView: View {
                 .foregroundStyle(channel.pending ? Theme.warning : .primary)
                 .lineLimit(1)
 
+            // 还没被设备确认时：黄色 + 一句说明，别让人以为推子没反应
+            if channel.pending {
+                Text("正在调整，请稍等")
+                    .font(.system(size: 9))
+                    .foregroundStyle(Theme.warning)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             HStack(spacing: 6) {
                 nudgeButton("−") { onCommit(nudgeTarget(direction: -1, fallback: channel.value - step)) }
                 // 枚举型参数没有「0」这个概念（例如话筒增益是 20/30/40/50/60 dB），不显示归零
