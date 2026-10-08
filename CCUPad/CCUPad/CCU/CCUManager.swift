@@ -281,7 +281,7 @@ final class CCUManager: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .failure(let error):
-                    completion(L10n.f("❌ 取 Digest 挑战失败：%@", error))
+                    completion(L10n.f("❌ 取 Digest 挑战失败：%@", String(describing: error)))
                 case .success(let response):
                     guard let header = response.headers["www-authenticate"],
                           let challenge = DigestChallenge.parse(header) else {
@@ -300,7 +300,7 @@ final class CCUManager: ObservableObject {
                         DispatchQueue.main.async {
                             switch second {
                             case .failure(let error):
-                                completion(L10n.f("⚠️ 挑战已取得，但验证请求失败：%@", error))
+                                completion(L10n.f("⚠️ 挑战已取得，但验证请求失败：%@", String(describing: error)))
                             case .success(let verified):
                                 if verified.status == 200 {
                                     completion(L10n.f("✅ 认证通过（realm=%@）", challenge.realm))
