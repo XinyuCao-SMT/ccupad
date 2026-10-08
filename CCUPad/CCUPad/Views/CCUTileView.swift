@@ -98,6 +98,7 @@ struct CCUTileView: View {
                         step: manager.step(for: channel),
                         enabled: channel.writable && state.status.isConnected,
                         live: manager.settings.liveWhileDragging,
+                        snapValues: channel.snapValues,
                         onPreview: { value in
                             manager.setGain(device: device.id,
                                             channel: channel,

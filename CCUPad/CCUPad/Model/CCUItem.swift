@@ -25,6 +25,12 @@ struct CCUItem: Identifiable, Hashable {
     let maxValue: Double?
     let value: MPValue
 
+    /// 设备对**枚举型**参数会额外下发合法档位表（`enum` 字段，`sweep.mjs` 实测用到过）。
+    ///
+    /// 这一点很关键：对枚举项，`min`/`max` 报的是**索引范围**，真正的合法值在档位表里。
+    /// 所以这类参数不能让推子自由取值 —— 否则会下发设备不接受的中间值。
+    var enumValues: [MPValue]? = nil
+
     var id: String { name }
 
     /// 去掉 Item 前缀，界面上短一些。
@@ -41,6 +47,22 @@ struct CCUItem: Identifiable, Hashable {
     var isNumeric: Bool { value.number != nil }
 
     var isWritable: Bool { !isReadOnly && isNumeric }
+
+    /// 枚举型参数里可比较的数值档位；只有一档或全是字符串时返回 nil。
+    var numericEnumValues: [Double]? {
+        guard let raw = enumValues else { return nil }
+        let numbers = raw.compactMap { $0.number }
+        return numbers.count > 1 ? numbers : nil
+    }
+
+    var isEnumerated: Bool { numericEnumValues != nil }
+
+    /// 给界面显示的档位摘要。
+    var enumSummary: String {
+        guard let raw = enumValues, raw.count > 1 else { return "" }
+        let head = raw.prefix(6).map { $0.displayText }.joined(separator: " / ")
+        return raw.count > 6 ? "\(head) …（共 \(raw.count) 档）" : head
+    }
 
     var displayValue: String { value.displayText }
 

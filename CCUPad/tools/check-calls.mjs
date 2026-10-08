@@ -176,6 +176,10 @@ parsed.forEach((f) => { f.code = stripNoise(f.raw).code; });
 
 /** type -> Map(member -> { kind, labels }) */
 const types = new Map();
+/** type -> Set(它声明遵循的协议名，只记我们自己定义的协议) */
+const conformances = new Map();
+/** protocol -> Map(member -> { kind, labels }) */
+const protocolRequirements = new Map();
 
 function addMember(typeName, member, info) {
   if (!types.has(typeName)) types.set(typeName, new Map());
@@ -192,14 +196,16 @@ function addMember(typeName, member, info) {
   }
 }
 
-const typeDecl = /\b(?:struct|class|enum|actor|protocol|extension)\s+([A-Z][A-Za-z0-9_]*)[^{]*?\{/g;
+const typeDecl = /\b(struct|class|enum|actor|protocol|extension)\s+([A-Z][A-Za-z0-9_]*)([^{]*)\{/g;
 
 for (const file of parsed) {
   const code = file.code;
   typeDecl.lastIndex = 0;
   let m;
   while ((m = typeDecl.exec(code)) !== null) {
-    const typeName = m[1];
+    const keyword = m[1];
+    const typeName = m[2];
+    const headerRest = m[3] ?? '';
     const braceIndex = code.indexOf('{', m.index + m[0].length - 1);
     const body = balancedBraces(code, braceIndex);
     if (!body) continue;
@@ -207,7 +213,22 @@ for (const file of parsed) {
     // 记录类型存在（即使没有成员）
     if (!types.has(typeName)) types.set(typeName, new Map());
 
+    // 遵循的协议（只关心我们自己定义的那些）
+    const colon = headerRest.indexOf(':');
+    if (colon >= 0) {
+      const listed = headerRest
+        .slice(colon + 1)
+        .split(',')
+        .map((s) => s.trim().replace(/<.*$/, '').trim())
+        .filter((s) => /^[A-Z][A-Za-z0-9_]*$/.test(s));
+      if (listed.length > 0) {
+        if (!conformances.has(typeName)) conformances.set(typeName, new Set());
+        for (const name of listed) conformances.get(typeName).add(name);
+      }
+    }
+
     const bodyText = body.inner;
+    const isProtocol = keyword === 'protocol';
 
     // func 成员
     const funcRe = /\bfunc\s+([A-Za-z_]\w*)\s*(?:<[^>]*>)?\s*\(/g;
@@ -229,6 +250,10 @@ for (const file of parsed) {
         return { label, hasDefault: /(^|[^=<>!])=([^=]|$)/.test(rest) };
       });
       addMember(typeName, fm[1], { kind: 'func', labels, file: file.rel });
+      if (isProtocol) {
+        if (!protocolRequirements.has(typeName)) protocolRequirements.set(typeName, new Map());
+        protocolRequirements.get(typeName).set(fm[1], { kind: 'func', labels });
+      }
     }
 
     // 属性成员
@@ -236,6 +261,12 @@ for (const file of parsed) {
     let pm;
     while ((pm = propRe.exec(bodyText)) !== null) {
       addMember(typeName, pm[1], { kind: 'prop', labels: [], file: file.rel });
+      if (isProtocol) {
+        if (!protocolRequirements.has(typeName)) protocolRequirements.set(typeName, new Map());
+        if (!protocolRequirements.get(typeName).has(pm[1])) {
+          protocolRequirements.get(typeName).set(pm[1], { kind: 'prop', labels: [] });
+        }
+      }
     }
 
     // 枚举 case
@@ -375,8 +406,66 @@ function labelsCompatible(callLabels, declLabels, hasTrailingClosure, argSegment
   return true;
 }
 
+// ------------------------------------------------------------------ 协议一致性
+//
+// 「type does not conform to protocol」是另一类常见编译错误：
+// 方法名写错一个字母、参数标签少一个，编译器就会报它。
+// 这里把「我们自己定义的协议」的要求逐个对照实现（外来的协议一律跳过）。
+for (const [typeName, protocolNames] of conformances) {
+  const members = types.get(typeName);
+  if (!members) continue;
+
+  for (const protocolName of protocolNames) {
+    const requirements = protocolRequirements.get(protocolName);
+    if (!requirements) continue;
+
+    for (const [reqName, req] of requirements) {
+      const declared = members.get(reqName);
+
+      if (!declared) {
+        problems.push({
+          rel: '(协议一致性)',
+          line: 0,
+          text: `${typeName} : ${protocolName}`,
+          issue: `缺成员 '${reqName}' —— ${typeName} 没有实现 ${protocolName} 的要求`,
+        });
+        continue;
+      }
+
+      if (req.kind !== 'func') continue;
+
+      if (declared.kind !== 'func') {
+        problems.push({
+          rel: '(协议一致性)',
+          line: 0,
+          text: `${typeName} : ${protocolName}`,
+          issue: `'${reqName}' 在协议里是方法，在 ${typeName} 里却是 ${declared.kind}`,
+        });
+        continue;
+      }
+
+      const implLabelSets = (declared.overloads ?? [declared.labels]).map((ls) => ls.map((l) => l.label));
+      const wanted = req.labels.map((l) => l.label);
+      const matched = implLabelSets.some((labels) => wanted.every((w) => labels.includes(w)));
+      if (!matched) {
+        problems.push({
+          rel: '(协议一致性)',
+          line: 0,
+          text: `${typeName} : ${protocolName}`,
+          issue: `'${reqName}' 参数标签不匹配：协议 [${wanted.map((l) => l ?? '_').join(', ')}] / 实现 [${implLabelSets
+            .map((ls) => ls.map((l) => l ?? '_').join(', '))
+            .join(' | ')}]`,
+        });
+      }
+    }
+  }
+}
+
 // ------------------------------------------------------------------ 汇总
 console.log(`解析 ${files.length} 个 Swift 文件，识别到 ${types.size} 个类型。`);
+console.log(
+  `其中自有协议 ${protocolRequirements.size} 个、被遵循的协议关系 ${[...conformances.values()].reduce((n, s) => n + s.size, 0)} 条。`
+);
 if (problems.length === 0) {
   console.log('调用点检查通过：方法都存在，参数标签与声明一致。');
   process.exit(0);

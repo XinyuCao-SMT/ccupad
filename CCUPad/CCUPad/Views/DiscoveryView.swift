@@ -211,6 +211,7 @@ struct DiscoveryView: View {
                     Text("id \(item.numericId)")
                     Text(item.itemType)
                     if !item.rangeText.isEmpty { Text(item.rangeText) }
+                    if item.isEnumerated { Text("枚举 \(item.enumValues?.count ?? 0) 档") }
                     if item.isReadOnly { Text("只读") }
                     if boundGain { Text("已绑增益").foregroundStyle(Theme.gainFill) }
                     if boundTally { Text("已绑 tally").foregroundStyle(Theme.preview) }
@@ -310,6 +311,17 @@ struct DiscoveryView: View {
                     TextField("除数", text: $divisorText)
                         .keyboardType(.decimalPad)
                     TextField("单位", text: $unitText)
+                }
+
+                if item.isEnumerated {
+                    Section("这项是枚举型") {
+                        Text("设备对这项只接受固定档位 —— 而且 min/max 报的是索引范围，不能当量程用。推子、± 按钮与批量操作都会吸附到最近的合法档位。")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                        Text("档位：\(item.enumSummary)")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                    }
                 }
 
                 Section("除数怎么定") {

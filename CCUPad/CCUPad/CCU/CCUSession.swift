@@ -16,7 +16,7 @@
 
 import Foundation
 
-final class CCUSession {
+final class CCUSession: CCUConnection {
 
     let device: CCUDevice
     private let password: String
@@ -207,7 +207,8 @@ final class CCUSession {
                                itemType: info["item_type"]?.displayText ?? "",
                                minValue: info["min"]?.number,
                                maxValue: info["max"]?.number,
-                               value: info["value"] ?? .null)
+                               value: info["value"] ?? .null,
+                               enumValues: info["enum"]?.arrayValue)
 
             if items[name] != item { changed = true }
             items[name] = item

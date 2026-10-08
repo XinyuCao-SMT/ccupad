@@ -22,7 +22,7 @@ final class CCUManager: ObservableObject {
     @Published var settings = AppSettings()
     @Published private(set) var lastExport: String? = nil
 
-    private var sessions: [UUID: CCUSession] = [:]
+    private var sessions: [UUID: CCUConnection] = [:]
     private var passwords: [UUID: String] = [:]
     private var reconnecting: Set<UUID> = []
     private var lastRebuild: [UUID: Date] = [:]
@@ -134,19 +134,31 @@ final class CCUManager: ObservableObject {
     // MARK: - 连接
 
     func connect(_ device: CCUDevice) {
-        guard let secret = password(for: device.id) else {
-            var state = self.state(device.id)
-            state.status = .failed("没有保存密码")
-            state.lastError = "没有保存密码"
-            states[device.id] = state
-            appendLog(device.label, "没有保存密码，无法连接")
-            return
+        let isSimulated = device.simulated == true
+
+        // 演示机位不需要密码；真实设备没有密码就连不上
+        var secret = ""
+        if !isSimulated {
+            guard let stored = password(for: device.id) else {
+                var state = self.state(device.id)
+                state.status = .failed("没有保存密码")
+                state.lastError = "没有保存密码"
+                states[device.id] = state
+                appendLog(device.label, "没有保存密码，无法连接")
+                return
+            }
+            secret = stored
         }
 
         sessions[device.id]?.stop()
         reconnecting.remove(device.id)
 
-        let session = CCUSession(device: device, password: secret)
+        let session: CCUConnection
+        if isSimulated {
+            session = SimulatedCCU(device: device)
+        } else {
+            session = CCUSession(device: device, password: secret)
+        }
 
         session.onLog = { [weak self] text in
             self?.appendLog(device.label, text)
@@ -168,12 +180,19 @@ final class CCUManager: ObservableObject {
         }
 
         sessions[device.id] = session
-        appendLog(device.label, "发起连接 \(device.endpointText)")
+        if isSimulated {
+            appendLog(device.label, "演示机位：不连网络，参数由本机生成")
+        } else {
+            appendLog(device.label, "发起连接 \(device.endpointText)")
+        }
         session.connect()
     }
 
+    /// 手动断开：**必须压住自动重连**，否则 5 秒后它自己又连回来了。
+    /// 做法是把 id 放进 `reconnecting`（`scheduleReconnect` 会因此直接返回），
+    /// 下一次手动 `connect` 时才清掉。
     func disconnect(_ id: UUID) {
-        reconnecting.remove(id)
+        reconnecting.insert(id)
         sessions[id]?.stop()
         sessions.removeValue(forKey: id)
         var state = self.state(id)
@@ -193,9 +212,42 @@ final class CCUManager: ObservableObject {
         }
     }
 
+    /// 加一台**不需要任何硬件**的演示机位，并且自带映射 ——
+    /// 装上 App 就能立刻看到推子、写入校验（待确认 → 已确认）与会跳动的 tally。
+    /// 它的存在还有一个诊断价值：真机连不上时，先用它证明「这套代码本身能跑」。
+    func addDemoDevice() {
+        let device = CCUDevice(name: "演示机位",
+                               host: "demo",
+                               port: 80,
+                               user: "demo",
+                               simulated: true)
+
+        devices.append(device)
+        AppStore.saveDevices(devices)
+        states[device.id] = CCUDeviceState(id: device.id)
+
+        var map = ParameterMap()
+        map.gainChannels = (1...8).map { index in
+            GainBinding(itemName: "ItemAudioIn\(index)Gain",
+                        title: "IN \(index)",
+                        divisor: 10,
+                        unit: "dB")
+        }
+        map.tallyPgmItem = "ItemTallyProgram"
+        map.tallyPvwItem = "ItemTallyPreview"
+        map.note = "演示机位自带映射（原始值为 0.1 dB，除数 10）"
+        maps[device.id] = map
+        saveMaps()
+
+        appendLog(device.label, "已添加演示机位：8 路音频增益 + PGM/PVW tally，无需任何硬件")
+        connect(device)
+    }
+
     private func scheduleReconnect(_ id: UUID) {
         guard settings.autoReconnect else { return }
         guard let device = device(id), device.enabled else { return }
+        // 演示机位不重连：它本来就不依赖网络
+        guard device.simulated != true else { return }
         guard !reconnecting.contains(id) else { return }
 
         reconnecting.insert(id)
@@ -284,6 +336,9 @@ final class CCUManager: ObservableObject {
 
         state.gains = map.gainChannels.compactMap { binding -> GainChannel? in
             guard let item = snapshot[binding.itemName] else { return nil }
+            let divisor = binding.divisor == 0 ? 1 : binding.divisor
+            // 档位表也要换算成界面值，推子才对得上
+            let enumDisplay = item.numericEnumValues?.map { $0 / divisor }
             return GainChannel(itemName: binding.itemName,
                                title: binding.title.isEmpty ? item.shortName : binding.title,
                                rawValue: item.value.number ?? 0,
@@ -293,7 +348,8 @@ final class CCUManager: ObservableObject {
                                unit: binding.unit,
                                writable: item.isWritable,
                                pending: pending.contains(binding.itemName),
-                               problem: failures[binding.itemName])
+                               problem: failures[binding.itemName],
+                               enumValues: enumDisplay)
         }
 
         state.tally = resolveTally(map: map, snapshot: snapshot)
@@ -455,11 +511,13 @@ final class CCUManager: ObservableObject {
         guard var state = states[id],
               let index = state.gains.firstIndex(where: { $0.itemName == channel.itemName }) else { return }
 
-        let range = channel.span
-        let clamped = min(max(displayValue, range.lowerBound), range.upperBound)
+        // 枚举型参数只能落在档位上；连续型按量程夹取。推子、± 按钮、批量归零共用这条路径。
+        let target = GainChannel.snapped(displayValue,
+                                        range: channel.span,
+                                        enumValues: channel.snapValues)
         let divisor = channel.divisor == 0 ? 1 : channel.divisor
 
-        state.gains[index].rawValue = clamped * divisor
+        state.gains[index].rawValue = target * divisor
         state.gains[index].problem = nil
         state.gains[index].pending = commit && !settings.dryRun
         state.updatedAt = Date()
@@ -468,7 +526,7 @@ final class CCUManager: ObservableObject {
         guard commit else { return }
 
         if settings.dryRun {
-            appendLog(deviceLabel(id), "试运行：\(channel.title) → \(GainChannel.format(clamped, unit: channel.unit))（未下发）")
+            appendLog(deviceLabel(id), "试运行：\(channel.title) → \(GainChannel.format(target, unit: channel.unit))（未下发）")
             if var current = states[id],
                let idx = current.gains.firstIndex(where: { $0.itemName == channel.itemName }) {
                 current.gains[idx].pending = false
@@ -477,7 +535,7 @@ final class CCUManager: ObservableObject {
             return
         }
 
-        sessions[id]?.setValue(itemName: channel.itemName, value: CCUItem.target(from: clamped * divisor))
+        sessions[id]?.setValue(itemName: channel.itemName, value: CCUItem.target(from: target * divisor))
     }
 
     func nudgeGain(device id: UUID, channel: GainChannel, delta: Double) {

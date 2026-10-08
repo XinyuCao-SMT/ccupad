@@ -15,6 +15,11 @@ struct CCUDevice: Identifiable, Codable, Hashable {
     var user: String = "admin"
     var enabled: Bool = true
 
+    /// 演示机位：不连网络，参数由本机生成。
+    /// 用可选类型是刻意的 —— 合成 Codable 对可选字段缺键时会取 nil，
+    /// 所以以后往 `CCUDevice` 加字段，旧版本存下来的设备清单不会因为缺键而整份解不出来。
+    var simulated: Bool? = nil
+
     var label: String { name.isEmpty ? host : name }
 
     var endpointText: String {

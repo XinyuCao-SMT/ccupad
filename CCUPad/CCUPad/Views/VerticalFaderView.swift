@@ -16,6 +16,8 @@ struct VerticalFaderView: View {
     let step: Double
     let enabled: Bool
     let live: Bool
+    /// 枚举型参数的合法档位；有值时松手吸附到最近档位，而不是按 step 取整。
+    var snapValues: [Double]? = nil
     var onPreview: (Double) -> Void
     var onCommit: (Double) -> Void
 
@@ -148,6 +150,11 @@ struct VerticalFaderView: View {
     }
 
     private func snap(_ value: Double) -> Double {
+        // 枚举型：只能落在设备给的档位上
+        if let values = snapValues, values.count > 1 {
+            return GainChannel.snapped(value, range: channel.span, enumValues: values)
+        }
+
         let range = channel.span
         let clamped = min(max(value, range.lowerBound), range.upperBound)
         guard step > 0.0001 else { return clamped }

@@ -96,17 +96,49 @@ struct GainChannel: Identifiable, Hashable {
     var pending: Bool = false
     var problem: String? = nil
 
+    /// 枚举型参数的合法档位（**界面值**，已按除数换算过）。
+    /// 有值时推子只允许落在这些档位上，量程也以档位表为准。
+    var enumValues: [Double]? = nil
+
     var id: String { itemName }
 
     var value: Double { divisor == 0 ? rawValue : rawValue / divisor }
     var minValue: Double { divisor == 0 ? rawMin : rawMin / divisor }
     var maxValue: Double { divisor == 0 ? rawMax : rawMax / divisor }
 
+    /// 枚举型参数要吸附的档位；连续型返回 nil。
+    var snapValues: [Double]? {
+        guard let values = enumValues, values.count > 1 else { return nil }
+        return values
+    }
+
     var span: ClosedRange<Double> {
+        // 枚举型的 min/max 是索引范围，真正合法的取值区间在档位表里
+        if let values = snapValues, let low = values.min(), let high = values.max(), high > low {
+            return low...high
+        }
         let low = min(minValue, maxValue)
         let high = max(minValue, maxValue)
         if high - low < 0.0001 { return (low - 1)...(high + 1) }
         return low...high
+    }
+
+    /// 先夹进量程，再按需吸附到最近的合法档位。
+    /// 推子松手、± 按钮、批量归零都走这一条 —— 保证绝不会下发设备不接受的中间值。
+    static func snapped(_ value: Double, range: ClosedRange<Double>, enumValues: [Double]?) -> Double {
+        let clamped = min(max(value, range.lowerBound), range.upperBound)
+        guard let values = enumValues, !values.isEmpty else { return clamped }
+
+        var best = clamped
+        var bestDistance = Double.greatestFiniteMagnitude
+        for candidate in values {
+            let distance = abs(candidate - clamped)
+            if distance < bestDistance {
+                best = candidate
+                bestDistance = distance
+            }
+        }
+        return best
     }
 
     /// 归一化到 0…1，给推子和电平条用。

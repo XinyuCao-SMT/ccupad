@@ -18,7 +18,7 @@ struct DevicesView: View {
         NavigationStack {
             List {
                 if manager.devices.isEmpty {
-                    Text("还没有设备。点右上角 + 添加 CCU。")
+                    Text("还没有设备。点右上角 + 添加 CCU，或先加一台演示机位（不需要任何硬件）。")
                         .foregroundStyle(Color.secondary)
                 } else {
                     ForEach(manager.devices) { device in
@@ -35,8 +35,9 @@ struct DevicesView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showAdd = true
+                    Menu {
+                        Button("添加 CCU…") { showAdd = true }
+                        Button("添加演示机位") { manager.addDemoDevice() }
                     } label: {
                         Image(systemName: "plus")
                     }
