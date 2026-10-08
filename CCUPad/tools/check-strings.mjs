@@ -30,6 +30,7 @@ if (files.length === 0) {
 }
 
 let totalProblems = 0;
+const keySets = new Map();   // 文件 -> Set(键)，最后比对两边键是否一致
 for (const file of files) {
   const rel = path.relative(ROOT, file);
   const raw = fs.readFileSync(file, 'utf8');
@@ -67,6 +68,24 @@ for (const file of files) {
   console.log(`  ${rel}：${count} 条，问题 ${bad.length} 处`);
   for (const b of bad) console.log(`    ${b}`);
   totalProblems += bad.length;
+  keySets.set(rel, new Set(keys.keys()));
+}
+
+// 各语言之间键必须完全一致：少一条 = 那种语言下这个界面会退回中文/英文
+if (keySets.size > 1) {
+  const [first, ...rest] = [...keySets.entries()];
+  for (const [rel, set] of rest) {
+    const missing = [...first[1]].filter((k) => !set.has(k));
+    const extra = [...set].filter((k) => !first[1].has(k));
+    if (missing.length || extra.length) {
+      console.log(`\n  ${rel} 与 ${first[0]} 的键不一致：缺 ${missing.length} 条、多 ${extra.length} 条`);
+      for (const k of missing.slice(0, 10)) console.log(`    缺: ${k}`);
+      for (const k of extra.slice(0, 10)) console.log(`    多: ${k}`);
+      totalProblems += missing.length + extra.length;
+    } else {
+      console.log(`  键与 ${first[0]} 完全一致（各 ${first[1].size} 条）`);
+    }
+  }
 }
 
 if (totalProblems > 0) {
