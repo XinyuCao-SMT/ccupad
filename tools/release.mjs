@@ -147,6 +147,27 @@ try {
   check('Info.plist 存在', fs.existsSync(plistPath));
   check('Assets.car 存在', fs.existsSync(path.join(appDir, 'Assets.car')));
 
+  // 图标：iOS 桌面读的是 Xcode 从 Assets.car 派生到包根目录的这几个 PNG。
+  // 少了它们人也能装上，只是桌面一片空白 —— 在真机上才会发现，所以在这里挡。
+  const iconFiles = fs.existsSync(appDir)
+    ? fs.readdirSync(appDir).filter((n) => /^AppIcon.*\.png$/.test(n))
+    : [];
+  check('包内有派生的 AppIcon PNG（桌面图标）', iconFiles.length > 0, iconFiles.join(', '));
+  if (fs.existsSync(path.join(appDir, 'Assets.car'))) {
+    const car = fs.readFileSync(path.join(appDir, 'Assets.car')).toString('latin1');
+    check('Assets.car 里含 AppIcon', car.includes('AppIcon'));
+    check('Assets.car 里含界面 logo（Logo）', car.includes('Logo'));
+  }
+
+  // 本地化：目录必须真的在包里，否则那种语言下界面会整片退回另一种语言
+  const lproj = fs.existsSync(appDir)
+    ? fs.readdirSync(appDir).filter((n) => n.endsWith('.lproj'))
+    : [];
+  check('包内有本地化目录（.lproj）', lproj.length >= 2, lproj.join(', '));
+  for (const name of lproj) {
+    check(`${name}/Localizable.strings 存在`, fs.existsSync(path.join(appDir, name, 'Localizable.strings')));
+  }
+
   if (fs.existsSync(binPath)) {
     const head = fs.readFileSync(binPath).subarray(0, 8);
     const magic = head.subarray(0, 4).toString('hex').toUpperCase();

@@ -6,6 +6,40 @@
 
 ---
 
+## 0.7.0 · 图标与「关于」页（tag `v0.7.0-logo`）
+
+### 一、换成索尼 logo
+
+* **App 图标**：`Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`，1024×1024 白底、
+  logo 居中占宽 82%（正方形是 iOS 的要求；源图是 16:9 宽幅，所以必须重新排版）。
+* **关于页里的 logo**：`Logo.imageset`（1x/2x/3x 三档，白底圆角卡片）。
+* 源图留在 `artwork/sony-logo.jpg`（不进 App 包），生成脚本 `tools/make-logo.py`
+  （Pillow）—— 换 logo 只要换源图再跑一次，不会漏尺寸。
+
+### 二、「关于」页加上版本号与开发者
+
+* **版本号从包里读**（`CFBundleShortVersionString` / `CFBundleVersion`），不再在代码里硬编码 ——
+  以前每次发版都要记得改一处文案，迟早漏掉。
+* 开发者显示 **SMT-Xinyu Cao**；「开发者：%@」「构建 %@」两条已加入中英翻译。
+
+### 三、新增两道发版门
+
+* **`tools/check-assets.mjs`**：校验资源目录里引用的图片是否真的存在、PNG 尺寸是否与
+  `Contents.json` 声明一致、AppIcon 是否有 1024 档且**必须写了 filename**。
+  （这个坑真踩了：原来的 appiconset 里只有一条 `size: 1024x1024` 却没有 filename，
+  于是桌面图标一直是空白的 —— 编译不报错，只有真机看桌面才发现。）
+* **发版结构校验新增 5 项**：包内有派生的 `AppIcon*.png`（iOS 桌面实际读的文件）、
+  `Assets.car` 里含 `AppIcon` 与 `Logo`、包内有 `.lproj` 目录且每个都有 `Localizable.strings`。
+
+### 四、我自己踩的一个坑（已修）
+
+生成图标时按 `CCUPad/Resources/...` 拼路径，**少了一层**，于是图片生成到了另一棵平行目录里：
+命令全成功、文件都在，**但构建完全看不到**。修法不是改对字符串，而是让脚本
+**自己去找含 `AppIcon.appiconset` 的那个 `Assets.xcassets`，找不到就直接报错退出** ——
+这样以后目录再挪也不会默默写错地方。
+
+---
+
 ## 0.6.0 · 英文界面 + 待确认提示（tag `v0.6.0-english`）
 
 ### 一、调整还没被设备确认时：黄色 + 「正在调整，请稍等」
