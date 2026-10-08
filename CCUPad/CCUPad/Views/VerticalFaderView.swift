@@ -47,9 +47,12 @@ struct VerticalFaderView: View {
                 .lineLimit(1)
 
             HStack(spacing: 6) {
-                nudgeButton("−") { onCommit(snap(channel.value - step)) }
-                nudgeButton("0") { onCommit(0) }
-                nudgeButton("+") { onCommit(snap(channel.value + step)) }
+                nudgeButton("−") { onCommit(nudgeTarget(direction: -1, fallback: channel.value - step)) }
+                // 枚举型参数没有「0」这个概念（例如话筒增益是 20/30/40/50/60 dB），不显示归零
+                if channel.snapValues == nil {
+                    nudgeButton("0") { onCommit(0) }
+                }
+                nudgeButton("+") { onCommit(nudgeTarget(direction: 1, fallback: channel.value + step)) }
             }
             .opacity(enabled ? 1 : 0.4)
 
@@ -147,6 +150,14 @@ struct VerticalFaderView: View {
         let ratio = min(max(Double(y) / Double(max(height, 1)), 0), 1)
         let raw = range.upperBound - ratio * span
         return snap(raw)
+    }
+
+    private func nudgeTarget(direction: Int, fallback: Double) -> Double {
+        // 枚举型：直接跳到相邻档位（按 step 加减再吸附会原地不动）
+        if let next = channel.adjacentEnumValue(from: channel.value, direction: direction) {
+            return next
+        }
+        return snap(fallback)
     }
 
     private func snap(_ value: Double) -> Double {

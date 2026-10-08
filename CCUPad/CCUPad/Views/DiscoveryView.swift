@@ -148,6 +148,15 @@ struct DiscoveryView: View {
             .buttonStyle(.bordered)
             .controlSize(.small)
 
+            Button("套用实测默认") {
+                if let id = activeDevice {
+                    manager.applyVerifiedDefaults(id)
+                    message = "已套用 HDCU 实测默认：话筒增益 2 路（5 档）+ tally PGM/PVW。\n换绑定前会自动拍一张增益快照，可在设置里回滚。"
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+
             Button("导出参数清单") {
                 exportInventory()
             }

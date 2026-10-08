@@ -116,20 +116,20 @@ struct ParameterMap: Codable, Hashable {
 
     /// **实测确认的 HDCU3500 / 3100 默认映射**（2026-10 在 10 台真机上验证）。
     ///
-    /// 前三类：
-    ///   · `ItemMicGainCh1/Ch2` —— 摄像机话筒增益，**5 档枚举**（20/30/40/50/60 dB）。
-    ///     ⚠️ 设备下发的档位表是「当前可选」的：摄像机没接上时只有 `Null` 一档，
-    ///     这时 App 会把它判成不可写（不会推出不合法的中间值）。
-    ///   · `ItemAudioOutCh1/Ch2Adjust` —— 音频输出增益，0…255，中心 128 = OSD 的 0。
-    ///   · `ItemAudioOutCh1/Ch2Level` —— 输出参考电平标准，3 档枚举。
+    /// 默认**只放一路要推的增益**：`ItemMicGainCh1/Ch2`（摄像机话筒增益，**5 档枚举**
+    /// 20/30/40/50/60 dB）。主控台就是「推子 + tally」，别的都收进密码开关后面。
+    ///
+    /// ⚠️ 设备下发的档位表是「当前可选」的：摄像机没接上时话筒增益只有 `Null` 一档，
+    /// 这时 App 会把它判成不可写（不会推出不合法的中间值）。
+    ///
+    /// 曾经也在默认里的 `ItemAudioOutCh1/2Adjust`（音频输出增益 0…255、中心 128）
+    /// 与 `ItemAudioOutCh1/2Level`（输出参考电平 3 档）按现场要求**不再默认绑定** ——
+    /// 需要的话解锁后在「参数发现」页绑回来即可，参数名与换算记在这里备查：
+    ///   · Adjust：数值型 0…255，offset 128（OSD 显示 = 原始 − 128）
+    ///   · Level ：枚举 3103000/3103001/3103002 = −20 / 0 / +4 dBu
     static func hdcu3500Default() -> ParameterMap {
         var map = ParameterMap()
 
-        let levelLabels = [
-            "3103000": "−20 dBu",
-            "3103001": "0 dBu",
-            "3103002": "+4 dBu",
-        ]
         let micGainLabels = [
             "3001000": "Null",
             "3001001": "20 dB",
@@ -144,19 +144,11 @@ struct ParameterMap: Codable, Hashable {
                         divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
             GainBinding(itemName: "ItemMicGainCh2", title: "MIC2 增益",
                         divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
-            GainBinding(itemName: "ItemAudioOutCh1Adjust", title: "OUT1 增益",
-                        divisor: 1, offset: 128, unit: ""),
-            GainBinding(itemName: "ItemAudioOutCh2Adjust", title: "OUT2 增益",
-                        divisor: 1, offset: 128, unit: ""),
-            GainBinding(itemName: "ItemAudioOutCh1Level", title: "OUT1 电平",
-                        divisor: 1, offset: 0, unit: "", valueLabels: levelLabels),
-            GainBinding(itemName: "ItemAudioOutCh2Level", title: "OUT2 电平",
-                        divisor: 1, offset: 0, unit: "", valueLabels: levelLabels),
         ]
 
         map.tallyPgmItem = "ItemTallyRStatus"
         map.tallyPvwItem = "ItemTallyGStatus"
-        map.note = "HDCU3500 实测默认（MIC GAIN 5 档；ADJUST 0…255 中心 128；R=PGM、G=PVW）"
+        map.note = "HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW）"
         return map
     }
 

@@ -24,12 +24,12 @@
 		CD0000000000000000000024 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000023 /* Assets.xcassets */; };
 		CD0000000000000000000027 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000026 /* AppStore.swift */; };
 		CD0000000000000000000029 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000028 /* Keychain.swift */; };
-		CD000000000000000000002C /* CCUTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002B /* CCUTileView.swift */; };
-		CD000000000000000000002E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002D /* ContentView.swift */; };
-		CD0000000000000000000030 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002F /* DashboardView.swift */; };
-		CD0000000000000000000032 /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000031 /* DevicesView.swift */; };
-		CD0000000000000000000034 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000033 /* DiscoveryView.swift */; };
-		CD0000000000000000000036 /* EnumChannelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000035 /* EnumChannelView.swift */; };
+		CD000000000000000000002C /* AdminLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002B /* AdminLockView.swift */; };
+		CD000000000000000000002E /* CCUTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002D /* CCUTileView.swift */; };
+		CD0000000000000000000030 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002F /* ContentView.swift */; };
+		CD0000000000000000000032 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000031 /* DashboardView.swift */; };
+		CD0000000000000000000034 /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000033 /* DevicesView.swift */; };
+		CD0000000000000000000036 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000035 /* DiscoveryView.swift */; };
 		CD0000000000000000000038 /* GainOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000037 /* GainOverviewView.swift */; };
 		CD000000000000000000003A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000039 /* SettingsView.swift */; };
 		CD000000000000000000003C /* TallyLampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000003B /* TallyLampView.swift */; };
@@ -56,12 +56,12 @@
 		CD0000000000000000000023 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CD0000000000000000000026 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		CD0000000000000000000028 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
-		CD000000000000000000002B /* CCUTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUTileView.swift; sourceTree = "<group>"; };
-		CD000000000000000000002D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		CD000000000000000000002F /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		CD0000000000000000000031 /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
-		CD0000000000000000000033 /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
-		CD0000000000000000000035 /* EnumChannelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumChannelView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002B /* AdminLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminLockView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002D /* CCUTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUTileView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000031 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000033 /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000035 /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
 		CD0000000000000000000037 /* GainOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GainOverviewView.swift; sourceTree = "<group>"; };
 		CD0000000000000000000039 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CD000000000000000000003B /* TallyLampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TallyLampView.swift; sourceTree = "<group>"; };
@@ -158,12 +158,12 @@
 		CD000000000000000000002A /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				CD000000000000000000002B /* CCUTileView.swift */,
-				CD000000000000000000002D /* ContentView.swift */,
-				CD000000000000000000002F /* DashboardView.swift */,
-				CD0000000000000000000031 /* DevicesView.swift */,
-				CD0000000000000000000033 /* DiscoveryView.swift */,
-				CD0000000000000000000035 /* EnumChannelView.swift */,
+				CD000000000000000000002B /* AdminLockView.swift */,
+				CD000000000000000000002D /* CCUTileView.swift */,
+				CD000000000000000000002F /* ContentView.swift */,
+				CD0000000000000000000031 /* DashboardView.swift */,
+				CD0000000000000000000033 /* DevicesView.swift */,
+				CD0000000000000000000035 /* DiscoveryView.swift */,
 				CD0000000000000000000037 /* GainOverviewView.swift */,
 				CD0000000000000000000039 /* SettingsView.swift */,
 				CD000000000000000000003B /* TallyLampView.swift */,
@@ -277,12 +277,12 @@
 				CD0000000000000000000021 /* WebSocketClient.swift in Sources */,
 				CD0000000000000000000027 /* AppStore.swift in Sources */,
 				CD0000000000000000000029 /* Keychain.swift in Sources */,
-				CD000000000000000000002C /* CCUTileView.swift in Sources */,
-				CD000000000000000000002E /* ContentView.swift in Sources */,
-				CD0000000000000000000030 /* DashboardView.swift in Sources */,
-				CD0000000000000000000032 /* DevicesView.swift in Sources */,
-				CD0000000000000000000034 /* DiscoveryView.swift in Sources */,
-				CD0000000000000000000036 /* EnumChannelView.swift in Sources */,
+				CD000000000000000000002C /* AdminLockView.swift in Sources */,
+				CD000000000000000000002E /* CCUTileView.swift in Sources */,
+				CD0000000000000000000030 /* ContentView.swift in Sources */,
+				CD0000000000000000000032 /* DashboardView.swift in Sources */,
+				CD0000000000000000000034 /* DevicesView.swift in Sources */,
+				CD0000000000000000000036 /* DiscoveryView.swift in Sources */,
 				CD0000000000000000000038 /* GainOverviewView.swift in Sources */,
 				CD000000000000000000003A /* SettingsView.swift in Sources */,
 				CD000000000000000000003C /* TallyLampView.swift in Sources */,
@@ -367,7 +367,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.4.0;
+    MARKETING_VERSION = 0.5.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;
@@ -397,7 +397,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.4.0;
+    MARKETING_VERSION = 0.5.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;

@@ -13,6 +13,7 @@ struct DashboardView: View {
     @State private var showBulkConfirm = false
     @State private var bulkText = ""
     @State private var bulkAction: (() -> Void)? = nil
+    @State private var showUnlock = false
 
     private let columns = [GridItem(.adaptive(minimum: 340), spacing: 14)]
 
@@ -39,6 +40,9 @@ struct DashboardView: View {
                 }
             } message: {
                 Text(bulkText)
+            }
+            .sheet(isPresented: $showUnlock) {
+                AdminUnlockSheet()
             }
         }
     }
@@ -78,6 +82,19 @@ struct DashboardView: View {
 
                 actionButton("撤销上次下发", systemImage: "arrow.uturn.backward") {
                     manager.undoLastChange()
+                }
+
+                // 锁定「其他项目」时的入口/出口：现场操作员只推增益，配置要密码才进得去
+                if manager.settings.lockAdmin {
+                    if manager.adminUnlocked {
+                        actionButton("收起其他项目", systemImage: "lock.open.fill") {
+                            manager.lockAdminNow()
+                        }
+                    } else {
+                        actionButton("解锁其他项目", systemImage: "lock.fill") {
+                            showUnlock = true
+                        }
+                    }
                 }
             }
             .padding(.vertical, 2)

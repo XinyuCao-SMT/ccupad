@@ -31,4 +31,9 @@ struct AppSettings: Codable, Equatable {
 
     /// 日志保留条数。
     var logLimit: Int = 300
+
+    /// **锁定「其他项目」**：打开后只留「主控台」（推子 + tally），
+    /// 参数发现 / 设备 / 设置三个页都要输入管理密码才能看到。
+    /// 只有在**已设置管理密码**时才允许打开（密码存在 Keychain，不在设置文件里）。
+    var lockAdmin: Bool = false
 }

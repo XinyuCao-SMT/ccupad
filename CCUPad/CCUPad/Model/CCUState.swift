@@ -120,6 +120,17 @@ struct GainChannel: Identifiable, Hashable {
         return valueLabels[String(Int(scaled.rounded()))]
     }
 
+    /// 枚举型通道取相邻档位（± 按钮用）。
+    /// 枚举参数没有「步长」概念，按 step 加减再吸附回去会原地不动，所以必须按档位表走。
+    func adjacentEnumValue(from current: Double, direction: Int) -> Double? {
+        guard let values = snapValues, direction != 0 else { return nil }
+        let sorted = values.sorted()
+        if direction > 0 {
+            return sorted.first { $0 > current + 0.0001 }
+        }
+        return sorted.last { $0 < current - 0.0001 }
+    }
+
     /// 枚举型参数要吸附的档位；连续型返回 nil。
     var snapValues: [Double]? {
         guard let values = enumValues, values.count > 1 else { return nil }

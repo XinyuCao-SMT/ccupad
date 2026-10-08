@@ -24,6 +24,12 @@ final class CCUManager: ObservableObject {
     /// 增益快照（回滚用）。最近的在最前面。
     @Published private(set) var snapshots: [GainSnapshot] = []
 
+    /// 「其他项目」是否已解锁（**不持久化**，重启回到锁定）。
+    @Published var adminUnlocked: Bool = false
+
+    /// 是否已设置管理密码。缓存成 @Published：否则界面每次重绘都会去读一次 Keychain。
+    @Published private(set) var adminPasswordPresent: Bool = false
+
     private var sessions: [UUID: CCUConnection] = [:]
     private var passwords: [UUID: String] = [:]
     private var reconnecting: Set<UUID> = []
@@ -50,6 +56,7 @@ final class CCUManager: ObservableObject {
         maps = AppStore.loadMaps()
         settings = AppStore.loadSettings()
         snapshots = AppStore.loadSnapshots()
+        adminPasswordPresent = Keychain.adminPassword()?.isEmpty == false
     }
 
     // MARK: - 查询
@@ -522,7 +529,29 @@ final class CCUManager: ObservableObject {
         maps[id] = ParameterMap.hdcu3500Default()
         saveMaps()
         appendLog(deviceLabel(id),
-                  "已套用实测默认映射：增益 OUT1/OUT2（ADJUST 0…255，偏移 128）+ 电平标准 2 路 + tally PGM/PVW")
+                  "已套用实测默认映射：话筒增益 2 路（5 档）+ tally PGM/PVW")
+    }
+
+    /// **手工**套用实测默认映射（覆盖当前绑定）。
+    /// 用途：早期版本给设备绑过别的通道（例如已经取消默认的 ADJUST），
+    /// 自动套用不会动已存在的映射，这时用它一键换成新默认。
+    func applyVerifiedDefaults(_ id: UUID) {
+        guard let session = sessions[id] else {
+            appendLog(deviceLabel(id), "未连接，无法套用默认映射")
+            return
+        }
+        let probe = session.snapshot(for: ["ItemAudioOutCh1Adjust", "ItemTallyRStatus"])
+        guard probe["ItemAudioOutCh1Adjust"] != nil || probe["ItemTallyRStatus"] != nil else {
+            appendLog(deviceLabel(id), "这台设备没有 HDCU 的那套参数名，未套用实测默认（可用「自动绑定」或手工绑）")
+            return
+        }
+
+        // 换绑定前先拍一张快照，免得之后想退回原值却没有依据
+        captureGainSnapshot(id, reason: "套用实测默认前")
+        maps[id] = ParameterMap.hdcu3500Default()
+        saveMaps()
+        rebuild(id)
+        appendLog(deviceLabel(id), "已套用实测默认映射：话筒增益 2 路（5 档）+ tally PGM/PVW")
     }
 
     // MARK: - 增益下发
@@ -846,5 +875,66 @@ final class CCUManager: ObservableObject {
 
     func saveSettings() {
         AppStore.saveSettings(settings)
+    }
+
+    // MARK: - 管理密码 / 锁定「其他项目」
+    //
+    // 现场只让操作员「推增益、看 tally」，参数发现 / 设备 / 设置要密码才进得去。
+    // 密码存 Keychain；**解锁状态不持久化**，重启 App 自动回到锁定。
+
+    /// 是否已设置管理密码。
+    var adminPasswordIsSet: Bool { adminPasswordPresent }
+
+    /// 要不要在界面上显示「其他项目」（参数发现 / 设备 / 设置）。
+    var adminAreaVisible: Bool {
+        !settings.lockAdmin || adminUnlocked
+    }
+
+    @discardableResult
+    func setAdminPassword(_ password: String) -> Bool {
+        guard !password.isEmpty else { return false }
+        let ok = Keychain.setAdminPassword(password)
+        if ok {
+            adminPasswordPresent = true
+            appendLog("安全", "已设置管理密码")
+        }
+        return ok
+    }
+
+    func clearAdminPassword() {
+        Keychain.deleteAdminPassword()
+        adminPasswordPresent = false
+        adminUnlocked = false
+        settings.lockAdmin = false
+        saveSettings()
+        appendLog("安全", "已清除管理密码，并关闭「锁定其他项目」")
+    }
+
+    func verifyAdminPassword(_ password: String) -> Bool {
+        guard let stored = Keychain.adminPassword() else { return false }
+        return !stored.isEmpty && stored == password
+    }
+
+    /// 开关锁定。**已设密码才允许打开** —— 否则锁上以后连设置页都进不去。
+    @discardableResult
+    func setLockAdmin(_ locked: Bool) -> Bool {
+        guard !locked || adminPasswordIsSet else { return false }
+        settings.lockAdmin = locked
+        adminUnlocked = false
+        saveSettings()
+        appendLog("安全", locked ? "已锁定「其他项目」，只留主控台" : "已关闭锁定")
+        return true
+    }
+
+    func unlockAdmin(with password: String) -> Bool {
+        guard verifyAdminPassword(password) else { return false }
+        adminUnlocked = true
+        appendLog("安全", "已解锁「其他项目」")
+        return true
+    }
+
+    /// 手动重新锁上（解完后想立刻收起）。
+    func lockAdminNow() {
+        adminUnlocked = false
     }
 }

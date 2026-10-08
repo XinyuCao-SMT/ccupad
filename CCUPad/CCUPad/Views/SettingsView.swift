@@ -15,6 +15,7 @@ struct SettingsView: View {
                 connectionSection
                 bindingSection
                 snapshotSection
+                AdminSecuritySection()
                 logSection
                 aboutSection
             }
@@ -173,7 +174,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section("关于") {
-            Text("CCUPad 0.4.0")
+            Text("CCUPad 0.5.0")
 
             Text("协议：HTTP Digest（MD5 / qop=auth）+ ws://<ip>/linear + MessagePack，与 ccu-studio 在 HDCU-3500 / 3100 上验证过的实现一致。")
                 .font(.caption2)

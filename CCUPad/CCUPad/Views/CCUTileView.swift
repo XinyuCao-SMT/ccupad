@@ -93,40 +93,28 @@ struct CCUTileView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .top, spacing: 12) {
                 ForEach(state.gains) { channel in
-                    // 枚举型参数（例如话筒增益 20/30/40/50/60 dB）用一排按钮；
-                    // 连续型才用推子。两者都不会下发设备不接受的中间值。
-                    if channel.snapValues != nil {
-                        EnumChannelView(
-                            channel: channel,
-                            enabled: channel.writable && state.status.isConnected,
-                            onSelect: { value in
-                                manager.setGain(device: device.id,
-                                                channel: channel,
-                                                displayValue: value,
-                                                commit: true)
-                            }
-                        )
-                    } else {
-                        VerticalFaderView(
-                            channel: channel,
-                            step: manager.step(for: channel),
-                            enabled: channel.writable && state.status.isConnected,
-                            live: manager.settings.liveWhileDragging,
-                            snapValues: channel.snapValues,
-                            onPreview: { value in
-                                manager.setGain(device: device.id,
-                                                channel: channel,
-                                                displayValue: value,
-                                                commit: false)
-                            },
-                            onCommit: { value in
-                                manager.setGain(device: device.id,
-                                                channel: channel,
-                                                displayValue: value,
-                                                commit: true)
-                            }
-                        )
-                    }
+                    // 一律用推子。枚举型参数（例如话筒增益 20/30/40/50/60 dB）会吸附到
+                    // 设备给的档位，所以同一个推子既能表达连续量、也能表达选择器；
+                    // ± 按钮在枚举型上按档位走。两种情况下都不会下发不合法值。
+                    VerticalFaderView(
+                        channel: channel,
+                        step: manager.step(for: channel),
+                        enabled: channel.writable && state.status.isConnected,
+                        live: manager.settings.liveWhileDragging,
+                        snapValues: channel.snapValues,
+                        onPreview: { value in
+                            manager.setGain(device: device.id,
+                                            channel: channel,
+                                            displayValue: value,
+                                            commit: false)
+                        },
+                        onCommit: { value in
+                            manager.setGain(device: device.id,
+                                            channel: channel,
+                                            displayValue: value,
+                                            commit: true)
+                        }
+                    )
                 }
             }
             .padding(.vertical, 2)
