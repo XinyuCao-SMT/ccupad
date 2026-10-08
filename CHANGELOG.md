@@ -6,6 +6,51 @@
 
 ---
 
+## 0.6.0 · 英文界面 + 待确认提示（tag `v0.6.0-english`）
+
+### 一、调整还没被设备确认时：黄色 + 「正在调整，请稍等」
+
+* 推子推完到设备回读确认之间，数值保持**琥珀色**，并在推子下方加一行
+  **「正在调整，请稍等」**；CCU 格子底部也同步显示（通道列横向滚动时也看得见）。
+* 确认后自动恢复；一直黄着说明设备没回读 —— 去日志页看写入是否被确认。
+
+### 二、英文界面（标准本地化，不是「另做一套」）
+
+* 新增 `CCUPad/Resources/en.lproj/Localizable.strings` 与 `zh-Hans.lproj/Localizable.strings`，
+  **各 212 条，键完全一致**（键就是中文原文，所以中文那份是「键=值」）。
+* **静态文案一行代码都不用改**：`Text("主控台")`、`Button("连接")`、`Section("地址")` 这些
+  字面量本身就是 `LocalizedStringKey`，系统自动查表。
+* **从数据模型算出来的文案**（连接状态、tally 文字、通道名、各类提示、快照原因、
+  连接测试结果）系统不会查表，新增 `Views/L10n.swift`（`L10n.t` / `L10n.f`）显式查一次；
+  自定义标签函数（`actionButton` / `chip` / `infoRow`）改为接收 `LocalizedStringKey`。
+* 切换方式：**iPad 设置 → CCUPad → 首选语言 → English / 中文**（iOS 13 起可按 App 单独设语言，
+  不用改系统语言；重启 App 后生效）。
+
+**踩到并修掉的一个坑**：一开始只做了 `en` 一个本地化 —— 那样 iOS 在「设备语言不受支持」时
+会**回退到开发区域（默认 en）**，结果**中文 iPad 会显示英文**。补上 `zh-Hans` 之后语言解析才确定，
+顺带 iOS 的「按 App 设语言」里也才会出现中文/English 两项。
+
+### 三、工具与校验
+
+* 新增 `tools/check-strings.mjs`，并**接进发版自检**：`.strings` 写错（少引号、重复键、
+  键值格式符数量不一致）**不会让编译失败**，只会让界面在那种语言下悄悄退回另一种语言 ——
+  所以必须在发版前挡一道。同时校验**各语言之间键完全一致**。
+* 新增 `tools/make-zh-strings.mjs`：中文那份从英文那份的键生成，避免两边手工维护后漂移。
+* 生成器支持 `.lproj`：按「**文件夹引用**」收进 Resources，Xcode 会把目录原样拷进 App 包，
+  于是 `en.lproj/Localizable.strings` 正好落在 iOS 找本地化资源的位置
+  （已实际解包 IPA 确认：`Payload/CCUPad.app/en.lproj/Localizable.strings` 与 `zh-Hans.lproj/…` 都在）。
+
+### 四、修掉的三个自己的错
+
+1. **`L10n.f` 传 `any Error` 编译不过**（`any Error` 不是 `CVarArg`）→ 改用 `String(describing:)`。
+   这是 0.6.0 第一次云编译失败的原因。
+2. **`CCUItem.swift` 括号失衡** —— 我编辑时误删了一个换行，把下一行的声明并进了注释里。
+   `check-sources.mjs` 抓到了。
+3. **`check-calls.mjs` 不认变参**（`CVarArg...`），于是 `L10n.f("…%@…", a, b)` 全被误报成
+   「标签不匹配」。修完用三个负向用例验证过：方法名写错、参数标签写错都仍能被抓到。
+
+---
+
 ## 0.5.0 · 精简主界面 + 密码锁（tag `v0.5.0-lock`）
 
 按现场要求把 App 收敛成「操作员界面」：主控台只有**推子**和 **tally 状态**，

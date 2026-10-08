@@ -11,8 +11,8 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 当前版本 | **0.5.0**（tag `v0.5.0-lock`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.5.0-lock)） |
-> | 归档产物 | `dist/v0.5.0-lock/CCUPad-v0.5.0-lock-unsigned.ipa`（489 KB，同目录有 SHA256 清单） |
+> | 当前版本 | **0.6.0**（tag `v0.6.0-english`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.6.0-english)） |
+> | 归档产物 | `dist/v0.6.0-english/CCUPad-v0.6.0-english-unsigned.ipa`（503 KB，同目录有 SHA256 清单） |
 > | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
 > 协议层是照 [`ccu-studio`](../ccu-studio) 在真机上验证过的实现逐条复刻的
@@ -50,6 +50,14 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 | 安全默认 | **默认开启「试运行」**：所有操作照常走一遍并写日志，但一个字节都不发给设备 |
 
 界面四个页：**主控台**（调音）· **参数发现**（绑定）· **设备**（增删改 + 连接测试）· **设置**。
+
+**界面语言有中文和英文两套，可按 App 单独切**：iPad「设置 → CCUPad → 首选语言 → English / 中文」
+（iOS 13 起支持，不用改系统语言；重启 App 后生效）。翻译在
+`CCUPad/Resources/{en,zh-Hans}.lproj/Localizable.strings`，键就是中文原文，
+两边键必须完全一致 —— 由 `node tools/check-strings.mjs` 在发版时校验。
+
+**推子推完到设备回读确认之间会显示黄色 + 「正在调整，请稍等」** —— 这不是卡住，是在等设备回推；
+确认后自动恢复。若一直黄着，去日志页看这次写入有没有被确认。
 
 ---
 
