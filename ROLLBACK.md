@@ -19,7 +19,8 @@
 
 | 版本 | 提交 | Tag | 内容 | IPA |
 | --- | --- | --- | --- | --- |
-| **v0.2.0 增益快照与回滚版**<br>（当前，推荐装） | 本地 `dd8d05f`<br>远端 `0296f25` | `v0.2.0-gain-tally` | **下发前自动拍增益快照 + 一键回滚**；演示机位（不需要硬件）；枚举型参数吸附到合法档位；照真机 OSD 补 `adjust` 词与「参数名 → OSD 栏目」映射；发版 / 回滚机制本身 | `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`（461 KB） |
+| **v0.3.0 实测映射版**<br>（当前，推荐装） | 本地 `a4d5416`<br>远端 `0d7a8c8` | `v0.3.0-verified-mapping` | **在 10 台真机上实测确认**增益与 tally 参数：`ItemAudioOutCh1/2Adjust`（0…255，256 档，中心 128）+ 新增 **offset 偏移换算**（界面 0 对齐 OSD 的 0）+ 枚举值标签（−20/0/+4 dBu）+ **连上即自动套用**；tally 实测 R=PGM、G=PVW；演示机位改用真机同名参数 | `dist/v0.3.0-verified-mapping/CCUPad-v0.3.0-verified-mapping-unsigned.ipa`（466 KB） |
+| v0.2.0 增益快照与回滚版 | 本地 `dd8d05f`<br>远端 `0296f25` | `v0.2.0-gain-tally` | **下发前自动拍增益快照 + 一键回滚**；演示机位（不需要硬件）；枚举型参数吸附到合法档位；照 OSD 补 `adjust` 词与「参数名 → OSD 栏目」映射 | `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`（461 KB） |
 | 0.1.0<br>（**未归档**） | — | 无 tag | 协议层（HTTP Digest / WebSocket / MessagePack）+ 主控台 + 参数发现 + 设备 + 设置 | 只有云端工件：run #3 / #4，见文末 |
 
 > ⚠️ **0.1.0 没有走发版流程** —— 本地没留 IPA 归档、也没有 tag。
@@ -58,6 +59,7 @@ API 重放会**新建提交对象**，所以远端提交的 SHA 与本地**不�
 1. 用 **Sideloadly** 装想要的版本，例如
    `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`
 2. 或从 GitHub Release 下载（**永久有效**，不受工件 30 天限制）：
+   * v0.3.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.3.0-verified-mapping>
    * v0.2.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.2.0-gain-tally>
 3. 同一个 Bundle ID 重装属于升级/降级安装，**设备清单与参数映射通常保留**。
    保险起见先在「参数发现」页导出参数清单，把映射留一份。
@@ -104,13 +106,14 @@ E:\harness\_backup\build-records.txt                          ← 各版本：�
 
 | 文件 | 大小 | SHA256（前 16 位，完整值见 `MANIFEST.txt`） |
 | --- | --- | --- |
+| `CCUPad-v0.3.0-verified-mapping-unsigned.ipa` | 466 KB | `D56E1BA43E535942…` |
 | `CCUPad-v0.2.0-gain-tally-unsigned.ipa` | 461 KB | `3C7B699C8518E8EE…` |
 
 ```powershell
-Get-FileHash .\dist\v0.2.0-gain-tally\CCUPad-v0.2.0-gain-tally-unsigned.ipa -Algorithm SHA256
+Get-FileHash .\dist\v0.3.0-verified-mapping\CCUPad-v0.3.0-verified-mapping-unsigned.ipa -Algorithm SHA256
 ```
 
-`MANIFEST.txt` 里还有逐项的 IPA 结构校验结果（arm64 / `CFBundleShortVersionString` = 0.2.0 /
+`MANIFEST.txt` 里还有逐项的 IPA 结构校验结果（arm64 / `CFBundleShortVersionString` = 对应版本 /
 `NSLocalNetworkUsageDescription` 在）。
 
 ---
@@ -121,10 +124,12 @@ Get-FileHash .\dist\v0.2.0-gain-tally\CCUPad-v0.2.0-gain-tally-unsigned.ipa -Alg
 | --- | --- |
 | 0.1.0（第一次编译成功） | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37734502920> |
 | 0.1.0 + 按 OSD 修正 | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37735906844> |
-| **v0.2.0-gain-tally** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37736352828> |
+| v0.2.0-gain-tally | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37736352828> |
+| **v0.3.0-verified-mapping** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37738959205> |
 
 各版本的 IPA 都已挂到对应 Release 的附件里，**永久可下载**：
 
+* v0.3.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.3.0-verified-mapping>
 * v0.2.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.2.0-gain-tally>
 
 ---
