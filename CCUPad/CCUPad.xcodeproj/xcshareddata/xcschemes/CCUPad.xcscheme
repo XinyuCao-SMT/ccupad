@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CD0000000000000000000040"
+               BlueprintIdentifier = "CD0000000000000000000042"
                BuildableName = "CCUPad.app"
                BlueprintName = "CCUPad"
                ReferencedContainer = "container:CCUPad.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD0000000000000000000040"
+            BlueprintIdentifier = "CD0000000000000000000042"
             BuildableName = "CCUPad.app"
             BlueprintName = "CCUPad"
             ReferencedContainer = "container:CCUPad.xcodeproj">
@@ -61,7 +61,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD0000000000000000000040"
+            BlueprintIdentifier = "CD0000000000000000000042"
             BuildableName = "CCUPad.app"
             BlueprintName = "CCUPad"
             ReferencedContainer = "container:CCUPad.xcodeproj">

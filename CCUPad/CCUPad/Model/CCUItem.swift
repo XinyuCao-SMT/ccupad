@@ -46,7 +46,25 @@ struct CCUItem: Identifiable, Hashable {
 
     var isNumeric: Bool { value.number != nil }
 
-    var isWritable: Bool { !isReadOnly && isNumeric }
+    /// 设备有没有给出**可用**的取值依据：要么有量程，要么有不止一档的档位表。
+    ///
+    /// 两者都没有时不能当成连续量程来推 —— 实测例子：摄像机没接上时
+    /// `ItemMicGainCh1` 的档位表只有 `Null` 一档、也没有 min/max；
+    /// 若按 −1…+1 的自由推子处理，一推就会下发设备不接受的中间值。
+    var hasUsableRange: Bool {
+        if !isReadOnly, let low = minValue, let high = maxValue, high > low { return true }
+        return numericEnumValues != nil
+    }
+
+    /// 不可写时给出**准确**的原因（日志与界面都用它，不要只说「只读」）。
+    var writeBlockReason: String? {
+        if isReadOnly { return "设备标记为只读（min == max）" }
+        if !isNumeric { return "当前值不是数值" }
+        if !hasUsableRange { return "设备没给出量程或档位表（例如摄像机未接上时 MIC GAIN 的档位表只有 Null）" }
+        return nil
+    }
+
+    var isWritable: Bool { writeBlockReason == nil }
 
     /// 枚举型参数里可比较的数值档位；只有一档或全是字符串时返回 nil。
     var numericEnumValues: [Double]? {

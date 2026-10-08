@@ -233,6 +233,17 @@ final class SimulatedCCU: CCUConnection {
             enumValues: [.int(3103000), .int(3103001), .int(3103002)])
         add("ItemAudioOutCh2Level", id: 3004, min: nil, max: nil, value: .int(3103001),
             enumValues: [.int(3103000), .int(3103001), .int(3103002)])
+
+        // 摄像机话筒增益：真机上是 5 档枚举（20/30/40/50/60 dB，当前 30 dB）
+        let micGainOptions: [MPValue] = [.int(3001001), .int(3001002), .int(3001003), .int(3001004), .int(3001005)]
+        add("ItemMicGainCh1", id: 3005, min: nil, max: nil, value: .int(3001002), enumValues: micGainOptions)
+        add("ItemMicGainCh2", id: 3006, min: nil, max: nil, value: .int(3001002), enumValues: micGainOptions)
+
+        // 档位表只有一档的形态 —— 真机上**摄像机没接上**时就是这样。
+        // App 必须把它判成不可写，绝不能当成 −1…+1 的自由推子（那会下发不合法的中间值）。
+        add("ItemMicGainCh1Variation", id: 3007, min: nil, max: nil, value: .int(3001000),
+            enumValues: [.int(3001000)])
+
         add("ItemTallyRStatus", id: 2001, min: 0, max: 1, value: .int(0))
         add("ItemTallyGStatus", id: 2002, min: 0, max: 1, value: .int(1))
         // 枚举型诱饵：min/max 报的是索引范围，合法值在这个档位表里 ——

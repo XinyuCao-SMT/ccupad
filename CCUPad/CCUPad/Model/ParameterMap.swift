@@ -116,9 +116,12 @@ struct ParameterMap: Codable, Hashable {
 
     /// **实测确认的 HDCU3500 / 3100 默认映射**（2026-10 在 10 台真机上验证）。
     ///
-    /// 前两路是真正要推的增益（ADJUST，0…255，中心 128 = OSD 的 0）；
-    /// 后两路是输出参考电平标准（3 档枚举），保留着方便查看/切换，
-    /// 所以带上了 `valueLabels` 让界面显示「−20 dBu / 0 dBu / +4 dBu」而不是 3103001。
+    /// 前三类：
+    ///   · `ItemMicGainCh1/Ch2` —— 摄像机话筒增益，**5 档枚举**（20/30/40/50/60 dB）。
+    ///     ⚠️ 设备下发的档位表是「当前可选」的：摄像机没接上时只有 `Null` 一档，
+    ///     这时 App 会把它判成不可写（不会推出不合法的中间值）。
+    ///   · `ItemAudioOutCh1/Ch2Adjust` —— 音频输出增益，0…255，中心 128 = OSD 的 0。
+    ///   · `ItemAudioOutCh1/Ch2Level` —— 输出参考电平标准，3 档枚举。
     static func hdcu3500Default() -> ParameterMap {
         var map = ParameterMap()
 
@@ -127,21 +130,33 @@ struct ParameterMap: Codable, Hashable {
             "3103001": "0 dBu",
             "3103002": "+4 dBu",
         ]
+        let micGainLabels = [
+            "3001000": "Null",
+            "3001001": "20 dB",
+            "3001002": "30 dB",
+            "3001003": "40 dB",
+            "3001004": "50 dB",
+            "3001005": "60 dB",
+        ]
 
         map.gainChannels = [
+            GainBinding(itemName: "ItemMicGainCh1", title: "MIC1 增益",
+                        divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
+            GainBinding(itemName: "ItemMicGainCh2", title: "MIC2 增益",
+                        divisor: 1, offset: 0, unit: "", valueLabels: micGainLabels),
             GainBinding(itemName: "ItemAudioOutCh1Adjust", title: "OUT1 增益",
                         divisor: 1, offset: 128, unit: ""),
             GainBinding(itemName: "ItemAudioOutCh2Adjust", title: "OUT2 增益",
                         divisor: 1, offset: 128, unit: ""),
-            GainBinding(itemName: "ItemAudioOutCh1Level", title: "OUT1 电平标准",
+            GainBinding(itemName: "ItemAudioOutCh1Level", title: "OUT1 电平",
                         divisor: 1, offset: 0, unit: "", valueLabels: levelLabels),
-            GainBinding(itemName: "ItemAudioOutCh2Level", title: "OUT2 电平标准",
+            GainBinding(itemName: "ItemAudioOutCh2Level", title: "OUT2 电平",
                         divisor: 1, offset: 0, unit: "", valueLabels: levelLabels),
         ]
 
         map.tallyPgmItem = "ItemTallyRStatus"
         map.tallyPvwItem = "ItemTallyGStatus"
-        map.note = "HDCU3500 实测默认（ADJUST 0…255 中心 128；R=PGM、G=PVW）"
+        map.note = "HDCU3500 实测默认（MIC GAIN 5 档；ADJUST 0…255 中心 128；R=PGM、G=PVW）"
         return map
     }
 

@@ -280,8 +280,8 @@ final class CCUSession: CCUConnection {
             markFailed(name, "设备上没有参数 \(name)")
             return
         }
-        guard item.isWritable else {
-            markFailed(name, "参数 \(name) 不可写（min == max，设备视为只读）")
+        if let reason = item.writeBlockReason {
+            markFailed(name, "参数 \(name) 不可写：\(reason)")
             return
         }
         if item.value.matches(value) {

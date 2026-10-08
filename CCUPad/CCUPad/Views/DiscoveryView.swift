@@ -213,6 +213,7 @@ struct DiscoveryView: View {
                     if !item.rangeText.isEmpty { Text(item.rangeText) }
                     if item.isEnumerated { Text("枚举 \(item.enumValues?.count ?? 0) 档") }
                     if item.isReadOnly { Text("只读") }
+                    if !item.isReadOnly && !item.isWritable { Text("不可写（无量程/档位）").foregroundStyle(Theme.warning) }
                     if boundGain { Text("已绑增益").foregroundStyle(Theme.gainFill) }
                     if boundTally { Text("已绑 tally").foregroundStyle(Theme.preview) }
                 }
