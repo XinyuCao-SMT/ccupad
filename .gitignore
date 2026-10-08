@@ -1,0 +1,17 @@
+# macOS / Xcode
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# 编译产物
+*.ipa
+Payload/
+*.dSYM.zip
+*.dSYM
+
+# 本地脚本产物
+*.log
+dist/

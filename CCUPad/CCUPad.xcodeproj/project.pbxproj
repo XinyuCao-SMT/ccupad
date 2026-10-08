@@ -1,0 +1,423 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CD0000000000000000000004 /* CCUPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000003 /* CCUPadApp.swift */; };
+		CD0000000000000000000007 /* CCUManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000006 /* CCUManager.swift */; };
+		CD0000000000000000000009 /* CCUSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000008 /* CCUSession.swift */; };
+		CD000000000000000000000C /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000000B /* AppSettings.swift */; };
+		CD000000000000000000000E /* CCUDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000000D /* CCUDevice.swift */; };
+		CD0000000000000000000010 /* CCUItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000000F /* CCUItem.swift */; };
+		CD0000000000000000000012 /* CCUState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000011 /* CCUState.swift */; };
+		CD0000000000000000000014 /* ParameterMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000013 /* ParameterMap.swift */; };
+		CD0000000000000000000017 /* DigestAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000016 /* DigestAuth.swift */; };
+		CD0000000000000000000019 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000018 /* HTTPClient.swift */; };
+		CD000000000000000000001B /* MessagePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000001A /* MessagePack.swift */; };
+		CD000000000000000000001D /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000001C /* WebSocketClient.swift */; };
+		CD0000000000000000000020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000001F /* Assets.xcassets */; };
+		CD0000000000000000000023 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000022 /* AppStore.swift */; };
+		CD0000000000000000000025 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000024 /* Keychain.swift */; };
+		CD0000000000000000000028 /* CCUTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000027 /* CCUTileView.swift */; };
+		CD000000000000000000002A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000029 /* ContentView.swift */; };
+		CD000000000000000000002C /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002B /* DashboardView.swift */; };
+		CD000000000000000000002E /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002D /* DevicesView.swift */; };
+		CD0000000000000000000030 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD000000000000000000002F /* DiscoveryView.swift */; };
+		CD0000000000000000000032 /* GainOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000031 /* GainOverviewView.swift */; };
+		CD0000000000000000000034 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000033 /* SettingsView.swift */; };
+		CD0000000000000000000036 /* TallyLampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000035 /* TallyLampView.swift */; };
+		CD0000000000000000000038 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000037 /* Theme.swift */; };
+		CD000000000000000000003A /* VerticalFaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000039 /* VerticalFaderView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CD000000000000000000003D /* CCUPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCUPad.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD0000000000000000000003 /* CCUPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUPadApp.swift; sourceTree = "<group>"; };
+		CD0000000000000000000006 /* CCUManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUManager.swift; sourceTree = "<group>"; };
+		CD0000000000000000000008 /* CCUSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUSession.swift; sourceTree = "<group>"; };
+		CD000000000000000000000B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		CD000000000000000000000D /* CCUDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUDevice.swift; sourceTree = "<group>"; };
+		CD000000000000000000000F /* CCUItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUItem.swift; sourceTree = "<group>"; };
+		CD0000000000000000000011 /* CCUState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUState.swift; sourceTree = "<group>"; };
+		CD0000000000000000000013 /* ParameterMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterMap.swift; sourceTree = "<group>"; };
+		CD0000000000000000000016 /* DigestAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigestAuth.swift; sourceTree = "<group>"; };
+		CD0000000000000000000018 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
+		CD000000000000000000001A /* MessagePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePack.swift; sourceTree = "<group>"; };
+		CD000000000000000000001C /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
+		CD000000000000000000001F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CD0000000000000000000022 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		CD0000000000000000000024 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		CD0000000000000000000027 /* CCUTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUTileView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000029 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002B /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002D /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
+		CD000000000000000000002F /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000031 /* GainOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GainOverviewView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000033 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000035 /* TallyLampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TallyLampView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000037 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		CD0000000000000000000039 /* VerticalFaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalFaderView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CD0000000000000000000042 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CD000000000000000000003E = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000001 /* CCUPad */,
+				CD000000000000000000003F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CD000000000000000000003F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CD000000000000000000003D /* CCUPad.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000002 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000003 /* CCUPadApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000005 /* CCU */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000006 /* CCUManager.swift */,
+				CD0000000000000000000008 /* CCUSession.swift */,
+			);
+			path = CCU;
+			sourceTree = "<group>";
+		};
+		CD000000000000000000000A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CD000000000000000000000B /* AppSettings.swift */,
+				CD000000000000000000000D /* CCUDevice.swift */,
+				CD000000000000000000000F /* CCUItem.swift */,
+				CD0000000000000000000011 /* CCUState.swift */,
+				CD0000000000000000000013 /* ParameterMap.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000015 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000016 /* DigestAuth.swift */,
+				CD0000000000000000000018 /* HTTPClient.swift */,
+				CD000000000000000000001A /* MessagePack.swift */,
+				CD000000000000000000001C /* WebSocketClient.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		CD000000000000000000001E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CD000000000000000000001F /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000021 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000022 /* AppStore.swift */,
+				CD0000000000000000000024 /* Keychain.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000026 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000027 /* CCUTileView.swift */,
+				CD0000000000000000000029 /* ContentView.swift */,
+				CD000000000000000000002B /* DashboardView.swift */,
+				CD000000000000000000002D /* DevicesView.swift */,
+				CD000000000000000000002F /* DiscoveryView.swift */,
+				CD0000000000000000000031 /* GainOverviewView.swift */,
+				CD0000000000000000000033 /* SettingsView.swift */,
+				CD0000000000000000000035 /* TallyLampView.swift */,
+				CD0000000000000000000037 /* Theme.swift */,
+				CD0000000000000000000039 /* VerticalFaderView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CD0000000000000000000001 /* CCUPad */ = {
+			isa = PBXGroup;
+			children = (
+				CD0000000000000000000002 /* App */,
+				CD0000000000000000000005 /* CCU */,
+				CD000000000000000000000A /* Model */,
+				CD0000000000000000000015 /* Protocol */,
+				CD000000000000000000001E /* Resources */,
+				CD0000000000000000000021 /* Store */,
+				CD0000000000000000000026 /* Views */,
+			);
+			path = CCUPad;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CD000000000000000000003C /* CCUPad */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD0000000000000000000044 /* Build configuration list for PBXNativeTarget "CCUPad" */;
+			buildPhases = (
+				CD0000000000000000000040 /* Sources */,
+				CD0000000000000000000042 /* Frameworks */,
+				CD0000000000000000000041 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CCUPad;
+			packageProductDependencies = (
+			);
+			productName = CCUPad;
+			productReference = CD000000000000000000003D /* CCUPad.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CD000000000000000000003B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					CD000000000000000000003C = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = CD0000000000000000000043 /* Build configuration list for PBXProject "CCUPad" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = CD000000000000000000003E;
+			packageReferences = (
+			);
+			productRefGroup = CD000000000000000000003F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CD000000000000000000003C /* CCUPad */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CD0000000000000000000041 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD0000000000000000000020 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CD0000000000000000000040 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD0000000000000000000004 /* CCUPadApp.swift in Sources */,
+				CD0000000000000000000007 /* CCUManager.swift in Sources */,
+				CD0000000000000000000009 /* CCUSession.swift in Sources */,
+				CD000000000000000000000C /* AppSettings.swift in Sources */,
+				CD000000000000000000000E /* CCUDevice.swift in Sources */,
+				CD0000000000000000000010 /* CCUItem.swift in Sources */,
+				CD0000000000000000000012 /* CCUState.swift in Sources */,
+				CD0000000000000000000014 /* ParameterMap.swift in Sources */,
+				CD0000000000000000000017 /* DigestAuth.swift in Sources */,
+				CD0000000000000000000019 /* HTTPClient.swift in Sources */,
+				CD000000000000000000001B /* MessagePack.swift in Sources */,
+				CD000000000000000000001D /* WebSocketClient.swift in Sources */,
+				CD0000000000000000000023 /* AppStore.swift in Sources */,
+				CD0000000000000000000025 /* Keychain.swift in Sources */,
+				CD0000000000000000000028 /* CCUTileView.swift in Sources */,
+				CD000000000000000000002A /* ContentView.swift in Sources */,
+				CD000000000000000000002C /* DashboardView.swift in Sources */,
+				CD000000000000000000002E /* DevicesView.swift in Sources */,
+				CD0000000000000000000030 /* DiscoveryView.swift in Sources */,
+				CD0000000000000000000032 /* GainOverviewView.swift in Sources */,
+				CD0000000000000000000034 /* SettingsView.swift in Sources */,
+				CD0000000000000000000036 /* TallyLampView.swift in Sources */,
+				CD0000000000000000000038 /* Theme.swift in Sources */,
+				CD000000000000000000003A /* VerticalFaderView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CD0000000000000000000045 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+    ALWAYS_SEARCH_USER_PATHS = NO;
+    CLANG_ANALYZER_NONNULL = YES;
+    CLANG_ENABLE_MODULES = YES;
+    CLANG_ENABLE_OBJC_ARC = YES;
+    CLANG_WARN_BOOL_CONVERSION = YES;
+    CLANG_WARN_EMPTY_BODY = YES;
+    CLANG_WARN_UNREACHABLE_CODE = YES;
+    COPY_PHASE_STRIP = NO;
+    DEBUG_INFORMATION_FORMAT = dwarf;
+    ENABLE_STRICT_OBJC_MSGSEND = YES;
+    ENABLE_TESTABILITY = YES;
+    ENABLE_USER_SCRIPT_SANDBOXING = YES;
+    GCC_DYNAMIC_NO_PIC = NO;
+    GCC_NO_COMMON_BLOCKS = YES;
+    GCC_OPTIMIZATION_LEVEL = 0;
+    GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)");
+    IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+    ONLY_ACTIVE_ARCH = YES;
+    SDKROOT = iphoneos;
+    SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+    SWIFT_EMIT_LOC_STRINGS = YES;
+    SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CD0000000000000000000046 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+    ALWAYS_SEARCH_USER_PATHS = NO;
+    CLANG_ANALYZER_NONNULL = YES;
+    CLANG_ENABLE_MODULES = YES;
+    CLANG_ENABLE_OBJC_ARC = YES;
+    CLANG_WARN_BOOL_CONVERSION = YES;
+    CLANG_WARN_EMPTY_BODY = YES;
+    CLANG_WARN_UNREACHABLE_CODE = YES;
+    COPY_PHASE_STRIP = NO;
+    DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+    ENABLE_NS_ASSERTIONS = NO;
+    ENABLE_STRICT_OBJC_MSGSEND = YES;
+    ENABLE_USER_SCRIPT_SANDBOXING = YES;
+    GCC_NO_COMMON_BLOCKS = YES;
+    IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+    SDKROOT = iphoneos;
+    SWIFT_COMPILATION_MODE = wholemodule;
+    SWIFT_EMIT_LOC_STRINGS = YES;
+    SWIFT_OPTIMIZATION_LEVEL = "-O";
+    VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CD0000000000000000000047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+    ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+    CODE_SIGN_STYLE = Automatic;
+    CURRENT_PROJECT_VERSION = 1;
+    ENABLE_PREVIEWS = YES;
+    GENERATE_INFOPLIST_FILE = YES;
+    INFOPLIST_KEY_CFBundleDisplayName = "CCU Pad";
+    INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+    INFOPLIST_KEY_NSLocalNetworkUsageDescription = "需要连接局域网内的索尼 CCU（例如 10.205.1.x 的 80 端口），以读取参数并下发音频增益。";
+    INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+    INFOPLIST_KEY_UIFileSharingEnabled = YES;
+    INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+    INFOPLIST_KEY_UIRequiresFullScreen = NO;
+    INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+    INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+    IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+    MARKETING_VERSION = 0.1.0;
+    PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
+    PRODUCT_NAME = "$(TARGET_NAME)";
+    SWIFT_EMIT_LOC_STRINGS = YES;
+    SWIFT_STRICT_CONCURRENCY = minimal;
+    SWIFT_VERSION = 5.0;
+    TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CD0000000000000000000048 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+    ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+    CODE_SIGN_STYLE = Automatic;
+    CURRENT_PROJECT_VERSION = 1;
+    ENABLE_PREVIEWS = YES;
+    GENERATE_INFOPLIST_FILE = YES;
+    INFOPLIST_KEY_CFBundleDisplayName = "CCU Pad";
+    INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+    INFOPLIST_KEY_NSLocalNetworkUsageDescription = "需要连接局域网内的索尼 CCU（例如 10.205.1.x 的 80 端口），以读取参数并下发音频增益。";
+    INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+    INFOPLIST_KEY_UIFileSharingEnabled = YES;
+    INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+    INFOPLIST_KEY_UIRequiresFullScreen = NO;
+    INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+    INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+    IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+    MARKETING_VERSION = 0.1.0;
+    PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
+    PRODUCT_NAME = "$(TARGET_NAME)";
+    SWIFT_EMIT_LOC_STRINGS = YES;
+    SWIFT_STRICT_CONCURRENCY = minimal;
+    SWIFT_VERSION = 5.0;
+    TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CD0000000000000000000043 /* Build configuration list for PBXProject "CCUPad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD0000000000000000000045 /* Debug */,
+				CD0000000000000000000046 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD0000000000000000000044 /* Build configuration list for PBXNativeTarget "CCUPad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD0000000000000000000047 /* Debug */,
+				CD0000000000000000000048 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = CD000000000000000000003B /* Project object */;
+}

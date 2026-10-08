@@ -1,0 +1,8 @@
+# 统一按 LF 存放，避免在 Windows / macOS 之间来回搬动时整文件看起来都变了
+* text=auto eol=lf
+
+# 这些是二进制，别做任何转换
+*.ipa binary
+*.png binary
+*.jpg binary
+*.xcassets/* binary

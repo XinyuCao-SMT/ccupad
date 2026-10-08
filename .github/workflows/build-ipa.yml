@@ -1,0 +1,187 @@
+name: Build unsigned IPA
+
+# 在 GitHub 免费的 macOS 虚拟机上编译出「未签名 IPA」。
+# 下载后可在 Windows 上用 Sideloadly / AltStore 用自己的 Apple ID 签名并装到 iPad。
+#
+# 详细步骤见仓库根目录的 CLOUD-BUILD.md。
+#
+# 本工程没有任何 Swift Package 依赖（WebSocket / MessagePack / HTTP Digest 全部自己实现），
+# 所以工作流里没有「解析依赖」那一步 —— 失败只可能来自编译本身。
+
+on:
+  # 手动触发（推荐）：Actions -> Build unsigned IPA -> Run workflow
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: '构建配置（排查编译问题时可切 Debug）'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - Release
+          - Debug
+
+  # 推送到默认分支时自动构建（只改文档不会触发）
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.swift'
+      - '**/*.xcodeproj/**'
+      - '.github/workflows/build-ipa.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ inputs.configuration || 'Release' }}, unsigned)
+    runs-on: macos-latest
+    timeout-minutes: 40
+
+    env:
+      CONFIGURATION: ${{ inputs.configuration || 'Release' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 先把仓库里到底有什么打出来 —— 目录结构不对时，这里一眼就能看出来
+      - name: 仓库内容自检
+        run: |
+          echo "workspace: $GITHUB_WORKSPACE"
+          echo "--- 顶层文件 ---"
+          ls -la "$GITHUB_WORKSPACE"
+          echo "--- 四层以内（已排除 .git）---"
+          find "$GITHUB_WORKSPACE" -maxdepth 4 -not -path '*/.git/*' -not -name '.git' | sort | head -100
+
+      # 先在云上跑一遍 Windows 侧那套静态自检，把「源文件没进工程」这类
+      # 低级错误在编译之前就暴露出来（不通过也不拦构建，只作为线索）。
+      - name: 静态自检（提示用，不拦构建）
+        continue-on-error: true
+        run: |
+          for d in "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/CCUPad"; do
+            if [ -f "$d/tools/check-sources.mjs" ]; then
+              echo "--- $d ---"
+              (cd "$d" && node tools/check-sources.mjs) || true
+            fi
+          done
+
+      - name: 定位 Xcode 工程
+        id: locate
+        run: |
+          echo "--- 搜索 CCUPad.xcodeproj ---"
+          PROJ="$(find "$GITHUB_WORKSPACE" -maxdepth 5 -type d -name 'CCUPad.xcodeproj' -not -path '*/.git/*' | head -1)"
+
+          if [ -z "$PROJ" ]; then
+            echo "::error title=仓库里没有源码::找不到 CCUPad.xcodeproj。请确认已经把代码推上来：仓库顶层应当能看到 CCUPad 目录，里面有 CCUPad.xcodeproj 和源码子目录。"
+            exit 1
+          fi
+
+          DIR="$(dirname "$PROJ")"
+          if [ "$DIR" = "$GITHUB_WORKSPACE" ]; then
+            REL="."
+          else
+            REL="${DIR#$GITHUB_WORKSPACE/}"
+          fi
+          if [ -z "$REL" ]; then
+            REL="."
+          fi
+
+          echo "工程文件: $PROJ"
+          echo "项目目录(相对仓库根): $REL"
+
+          echo "--- 工程能否被解析 ---"
+          xcodebuild -list -project "$PROJ" 2>&1 | head -40 || true
+
+          echo "rel=$REL" >> "$GITHUB_OUTPUT"
+
+      - name: 显示编译工具链
+        run: |
+          sw_vers
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: 编译（未签名）
+        working-directory: ${{ steps.locate.outputs.rel }}
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project CCUPad.xcodeproj \
+            -scheme CCUPad \
+            -configuration "$CONFIGURATION" \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build 2>&1 | tee build.log
+
+      - name: 编译失败时提取错误摘要
+        if: failure()
+        working-directory: ${{ steps.locate.outputs.rel }}
+        run: |
+          {
+            echo "## 编译错误摘要"
+            echo ""
+            echo "把下面这段直接发给开发助手即可定位问题："
+            echo ""
+            echo '```'
+            grep -E "(error:|fatal error:|does not conform|cannot find|no such module|ambiguous|missing argument|cannot convert)" build.log 2>/dev/null | sort -u | head -80 || echo "（没能从日志里匹配到 error: 行，请下载 build-log 工件查看完整日志）"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "--- 错误原文 ---"
+          grep -E "(error:|fatal error:)" build.log 2>/dev/null | sort -u | head -80 || true
+
+      - name: 打包未签名 IPA
+        working-directory: ${{ steps.locate.outputs.rel }}
+        run: |
+          APP_PATH="build/Build/Products/$CONFIGURATION-iphoneos/CCUPad.app"
+          PLIST="$APP_PATH/Info.plist"
+
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error title=没有构建产物::没找到 $APP_PATH"
+            exit 1
+          fi
+
+          echo "== 产物关键信息 =="
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$PLIST" || true
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PLIST" || true
+          /usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$PLIST" || true
+
+          # 局域网权限说明缺失 = 连不上 CCU 且看不到任何错误（iOS 14 起会静默丢包）。
+          # 正常由 INFOPLIST_KEY_NSLocalNetworkUsageDescription 生成，这里兜底。
+          if /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$PLIST" >/dev/null 2>&1; then
+            echo "NSLocalNetworkUsageDescription: 已存在 ✓"
+          else
+            echo "::warning::Info.plist 缺少 NSLocalNetworkUsageDescription，已在打包前补上（不补就连不上 CCU）"
+            /usr/libexec/PlistBuddy -c 'Add :NSLocalNetworkUsageDescription string "Connecting to Sony CCU devices on the local network is required to read parameters and set audio gain."' "$PLIST"
+          fi
+
+          rm -rf Payload CCUPad-unsigned.ipa
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -qry CCUPad-unsigned.ipa Payload
+
+          echo "== IPA 内容 =="
+          unzip -l CCUPad-unsigned.ipa | head -20
+          ls -lh CCUPad-unsigned.ipa
+
+      - name: 上传 IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: CCUPad-unsigned-ipa
+          path: ${{ steps.locate.outputs.rel }}/CCUPad-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 失败时上传完整日志
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: ${{ steps.locate.outputs.rel }}/build.log
+          if-no-files-found: ignore
+          retention-days: 7
