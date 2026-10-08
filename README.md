@@ -65,6 +65,23 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 **索引范围**，合法值只在档位表（报文的 `enum` 字段）里。这种情况 App 会把推子**吸附到最近的合法档位**，
 量程也改成以档位表为准 —— 所以不会出现「推子停在设备不接受的中间值」这种问题。
 
+**已确认增益落在 OSD 的 `<AUDIO OUT>` 页**（现场截图）：
+
+```
+<AUDIO OUT>                              A02 TOP
+  DELAY          : 0 ms
+  AES/EBU OUT    : AES/EBU
+  ANALOG OUT     : MIC 1/2
+  CH1 LEVEL      : 0 dBu      ADJUST : →  0
+  CH2 LEVEL      : 0 dBu      ADJUST :     0
+```
+
+每通道两栏 —— `LEVEL`（电平）与 **`ADJUST`（增益调整）**，现场要调的多半是 `ADJUST`。
+所以参数发现页里凡是名字像 `…AudioOut…Level` / `…AudioOut…Adjust` 的项，
+App 会直接在下面标出「像是 OSD『AUDIO OUT』页的 LEVEL / ADJUST」，照着提示绑即可。
+（这条也是照截图把 `adjust` 补进增益词表的：少了它，`…Adjust` 会被归成「音频相关」，
+既不会被自动绑定，也不会进 `--watch` 的观察清单。）
+
 **tally 建议这样确认**：把候选参数按实时值盯着，然后在切换台上真的切一次机位 ——
 哪个参数跟着动，它就是 tally。若这台设备用一个位图参数表示 tally，就把 PGM 与 PVW 绑同一个参数，
 再到「设置」里调阈值。

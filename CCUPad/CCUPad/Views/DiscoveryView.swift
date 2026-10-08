@@ -218,6 +218,13 @@ struct DiscoveryView: View {
                 }
                 .font(.caption2)
                 .foregroundStyle(Color.secondary)
+
+                // 现场是按 OSD 页面认参数的，这里把参数名映射回 OSD 的栏目名
+                if let hint = ItemClassifier.hint(for: item.name) {
+                    Text(hint)
+                        .font(.caption2)
+                        .foregroundStyle(Theme.accent.opacity(0.9))
+                }
             }
 
             Spacer(minLength: 4)

@@ -121,7 +121,11 @@ enum ItemRole: String, CaseIterable, Identifiable {
 /// 按参数名挑候选。宁可宽一点：漏掉一项就等于这项功能在真机上不可用，
 /// 多挑几项只是列表长一点，而列表本身就可以搜。
 enum ItemClassifier {
-    private static let gainWords = ["gain", "level", "volume", "trim", "atten", "fader", "loudness"]
+    // "adjust" 是照着真机 OSD 补进来的：HDCU 的 <AUDIO OUT> 页里，
+    // CH1/CH2 的两栏是 `LEVEL : 0 dBu` 与 `ADJUST : 0` —— 可调的那一栏叫 ADJUST。
+    // 少了这个词，`…AudioOutCh1Adjust` 会被归成「音频相关」而不是「增益候选」，
+    // 既不会被自动绑定，也不会进 --watch 的观察清单。
+    private static let gainWords = ["gain", "level", "volume", "trim", "atten", "fader", "loudness", "adjust", "offset"]
     private static let audioWords = ["audio", "mic", "intercom", "afv", "monitor", "aes", "emb"]
     private static let tallyWords = ["tally", "onair", "on-air", "on_air", "pgm", "preview", "pvw"]
 
@@ -156,5 +160,34 @@ enum ItemClassifier {
         let lower = name.lowercased()
         let body = lower.hasPrefix("item") ? String(lower.dropFirst(4)) : lower
         return tallyWords.contains(where: { body.contains($0) })
+    }
+
+    /// 给界面的一句提示：这一项大概对应真机 OSD 的哪一页。
+    ///
+    /// 现场是靠 OSD 页面认参数的（用户给过一张 `<AUDIO OUT>` 页的截图），
+    /// 所以把 OSD 的栏目名映射回参数名，能让人一眼对上。
+    static func hint(for name: String) -> String? {
+        let lower = name.lowercased()
+        let body = lower.hasPrefix("item") ? String(lower.dropFirst(4)) : lower
+
+        let looksAudio = body.contains("audio")
+        let looksOut = body.contains("out") || body.contains("tx")
+        guard looksAudio else {
+            return body.contains("intercom") ? "对讲相关" : nil
+        }
+
+        if looksOut {
+            if body.contains("delay") { return "像是 OSD「AUDIO OUT」页的 DELAY" }
+            if body.contains("level") { return "像是 OSD「AUDIO OUT」页的 LEVEL（电平）" }
+            if body.contains("adjust") { return "像是 OSD「AUDIO OUT」页的 ADJUST（增益调整）" }
+            if body.contains("aes") || body.contains("ebu") { return "像是 OSD「AUDIO OUT」页的 AES/EBU OUT" }
+            if body.contains("analog") { return "像是 OSD「AUDIO OUT」页的 ANALOG OUT" }
+            return "像是 OSD「AUDIO OUT」页"
+        }
+
+        if body.contains("level") { return "音频电平" }
+        if body.contains("adjust") { return "音频增益调整" }
+        if body.contains("delay") { return "音频延时" }
+        return nil
     }
 }

@@ -29,25 +29,39 @@
 > 而 `publish.mjs` 原本拿本地 SHA 去匹配云端运行，永远匹配不上，会误判「push 没触发构建」
 > 并多余地再触发一次（反而被 `concurrency` 取消掉真正那次）。现在改成拿**远端分支 HEAD** 匹配。
 
-### 2. 一台 CCU 的**参数清单**（这是最省事的一步）
+### 2. 参数名（**位置已确认，只差参数名**）
 
-因为索尼没有公开 HDCU 的完整参数名表，**音频增益和 tally 到底叫什么，只能在真机上确认**。
-最省事的做法不是你在 App 里一行行翻，而是：
+现场已确认：**增益在 CCU 网页 OSD 的 `<AUDIO OUT>` 页**，每通道两栏
+`CH1 LEVEL : 0 dBu` 与 `ADJUST : 0`（同页还有 DELAY / AES-EBU OUT / ANALOG OUT）。
+可调的那一栏叫 **ADJUST**，所以 `adjust` 已补进增益词表 —— 否则 `…Adjust` 会被漏掉。
 
-**在你能访问 CCU 的那台 Windows 上跑一次导出的对照**（ccu-studio 已经能干这件事）：
+现在只差**这几个栏目对应的参数名**。两条路，任选：
+
+**A. 直接跑探查（推荐，一条命令）**
 
 ```powershell
 cd E:\harness\ccu-studio
-node tools/inventory.mjs
+node tools/probe-gain-tally.mjs --ip=10.205.1.112
 ```
 
-它会打印每类参数的数量与样例。我需要看到 `ItemAudio*` / `ItemIntercom*` /
-任何带 `Gain` / `Level` / `Tally` 的**完整参数名**。
-把这些名字发我，我就能把 `ParameterMap.autoDetect` 里的模式改成精确匹配，
-App 一装上就自动绑定好，你连「参数发现」页都不用去。
+输出里会有一段**「OSD『AUDIO OUT』页上的项」**，每行还标出它对应 OSD 的哪个栏目
+（如 `[AUDIO OUT / ADJUST]`），并给出 min/max、当前值、是否可写、是否枚举。
+把这一段发我即可。完整清单同时导到 `ccu-studio\probe-out\*.tsv`。
 
-> 或者装好 App 之后，在「参数发现」页点**导出参数清单**，
-> 把那个 TSV 发我 —— 里面有全部约 3300 项的名字、ID、范围、当前值与归类。
+**B. 名字里没有 audioout 这种写法时 → 用 OSD 揪出来**
+
+```powershell
+node tools/probe-gain-tally.mjs --ip=10.205.1.112 --watch-all
+```
+
+然后在 OSD 里进 `<AUDIO OUT>` 页，按一次 `ADJUST` 的 ▲/▼ ——
+终端上哪个参数跟着跳，它就是增益。`--watch-all` 不依赖我的词表，任何参数变化都会报。
+
+> 也可以装好 App 后在「参数发现」页搜 `audio`，对照每行下面的 OSD 提示绑定；
+> 那里点「导出参数清单」能导出全部约 3300 项（名字 / ID / 范围 / 当前值 / 归类 / 枚举档位）。
+
+拿到名字后我会把 `ParameterMap.autoDetect` 改成精确匹配，App 装上即自动绑好，
+你连参数发现页都不用去。
 
 ---
 
