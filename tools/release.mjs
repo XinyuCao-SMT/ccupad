@@ -288,7 +288,10 @@ if (opt.upload) {
     process.exit(1);
   }
 
-  if (!opt['no-push']) {
+  // 上传这一段任何一步失败都要说清楚「哪一步失败、还剩什么没做、怎么补」，
+  // 否则会出现「本地归档与 tag 都好了、Release 却没建」这种半个发版还不知道的状态。
+  try {
+    if (!opt['no-push']) {
     console.log('  推送提交与 tag（走 api.github.com）…');
     const push = spawnSync(process.execPath, [path.join(REPO_DIR, 'tools', 'push-via-api.mjs'), SLUG],
       { cwd: REPO_DIR, stdio: 'inherit' });
@@ -336,22 +339,39 @@ if (opt.upload) {
   }
 
   console.log(`  Release：${release.html_url}`);
-  const uploadUrl = `https://uploads.github.com/repos/${SLUG}/releases/${release.id}/assets?name=${encodeURIComponent(ipaName)}`;
-  const bytes = fs.readFileSync(ipaPath);
-  const up = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${TOKEN}`,
-      'Content-Type': 'application/octet-stream',
-      'User-Agent': 'ccupad-release',
-    },
-    body: bytes,
-  });
-  if (up.ok) {
-    console.log(`  已挂上 IPA 附件：${ipaName}`);
+
+  // 幂等：附件已经在就不重复传（重传同名附件 GitHub 会回 422 already_exists）
+  const alreadyThere = (release.assets ?? []).find((a) => a.name === ipaName);
+  if (alreadyThere) {
+    console.log(`  附件已存在：${alreadyThere.name}（${Math.round(alreadyThere.size / 1024)} KB），跳过上传`);
   } else {
-    console.error(`  ⚠ 附件上传失败：HTTP ${up.status} ${(await up.text()).slice(0, 200)}`);
-    console.error(`    可以到 ${release.html_url} 手动拖上去。`);
+    const uploadUrl = `https://uploads.github.com/repos/${SLUG}/releases/${release.id}/assets?name=${encodeURIComponent(ipaName)}`;
+    const bytes = fs.readFileSync(ipaPath);
+    const up = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${TOKEN}`,
+        'Content-Type': 'application/octet-stream',
+        'User-Agent': 'ccupad-release',
+      },
+      body: bytes,
+    });
+    if (up.ok) {
+      console.log(`  已挂上 IPA 附件：${ipaName}`);
+    } else if (up.status === 422) {
+      console.log('  附件已存在（HTTP 422 already_exists），跳过');
+    } else {
+      console.error(`  ⚠ 附件上传失败：HTTP ${up.status} ${(await up.text()).slice(0, 200)}`);
+      console.error(`    可以到 ${release.html_url} 手动拖上去。`);
+    }
+  }
+  } catch (e) {
+    console.error('');
+    console.error(`⚠ 上传阶段失败：${e.message}`);
+    console.error('  本地归档、清单、tag 都已经做好（上面的输出里能看到），只有 GitHub 这一侧没完成。');
+    console.error('  这条命令是幂等的，直接重跑同一句即可（缺哪步补哪步）：');
+    console.error(`    node tools/release.mjs --tag=${TAG} --commit=${commit} --upload --no-tag`);
+    process.exit(1);
   }
 }
 
