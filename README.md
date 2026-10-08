@@ -11,8 +11,8 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 当前版本 | **0.3.0**（tag `v0.3.0-verified-mapping`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.3.0-verified-mapping)） |
-> | 归档产物 | `dist/v0.3.0-verified-mapping/CCUPad-v0.3.0-verified-mapping-unsigned.ipa`（466 KB，同目录有 SHA256 清单） |
+> | 当前版本 | **0.4.0**（tag `v0.4.0-micgain`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.4.0-micgain)） |
+> | 归档产物 | `dist/v0.4.0-micgain/CCUPad-v0.4.0-micgain-unsigned.ipa`（479 KB，同目录有 SHA256 清单） |
 > | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
 > 协议层是照 [`ccu-studio`](../ccu-studio) 在真机上验证过的实现逐条复刻的
@@ -62,10 +62,17 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 
 | 用途 | 参数名 | 性质 |
 | --- | --- | --- |
-| **音频输出增益（要推的）** | `ItemAudioOutCh1Adjust` / `ItemAudioOutCh2Adjust` | 数值型，**min 0 … max 255（256 档）**，静止值 **128** |
+| **话筒增益（MIC GAIN）** | `ItemMicGainCh1` / `ItemMicGainCh2` | **5 档枚举**：20 / 30 / 40 / 50 / 60 dB（摄像机**没接上**时只剩 `Null` 一档） |
+| **音频输出增益** | `ItemAudioOutCh1Adjust` / `ItemAudioOutCh2Adjust` | 数值型，**min 0 … max 255（256 档）**，静止值 **128** |
 | 输出参考电平标准 | `ItemAudioOutCh1Level` / `ItemAudioOutCh2Level` | **3 档枚举**：−20 dBu / 0 dBu / +4 dBu（是标准选择器，不是可推的增益） |
 | **tally 播出（红 / PGM）** | `ItemTallyRStatus` | 0 / 1 |
 | **tally 预览（绿 / PVW）** | `ItemTallyGStatus` | 0 / 1 |
+
+**⚠️ 一个容易踩的协议行为：设备下发的 `enum` 是「此刻可选」的候选，不是完整枚举域。**
+同一台设备的 `ItemMicGainCh1`：摄像机接上时档位表是 5 档 [20/30/40/50/60 dB]、当前值 `3001002`（=30 dB）；
+**摄像机没接上时档位表只有 `Null` 一档**、当前值 `3001000`。
+所以 App 在「档位表只有一档、又没有 `min`/`max`」时会把该通道判为**不可写**（界面置灰）——
+否则推子会退化成自由控件，一推就下发设备不接受的中间值。这一条是 0.4.0 修掉的真隐患。
 
 **关键换算：OSD 显示值 = 原始值 − 128。** 证据：OSD 上 `ADJUST : 0` 而原始值是 `128`；
 同一页 `LEVEL : 0 dBu` 的原始值是 `3103001`，而固件枚举表里 `3103001 = 0dBu` ——
@@ -279,6 +286,8 @@ HTTP 客户端同理是手写的（只用来取挑战）。
 * **增益方向 / 单位**由绑定里的「除数 + 偏移 + 单位」决定，App 不假设设备用的是 dB。
   已知 HDCU 的 ADJUST 是 0…255、中心 128（已内置 offset 128）；每档多少 dB 参数里没有，
   需要按现场手册或 OSD 实际显示来定。
+* **设备下发的档位表随状态变化**（同 0.4.0 那条）：摄像机没接上时话筒增益只剩 `Null` 一档，
+  App 会把这类通道判为不可写而不是硬推。若你看到某路灰着，先看设备那边这个参数当前是否可选。
 * 只处理**参数层**：不做固件升级、不恢复出厂、不改登录密码、不碰网络与 IP Live 配置。
 * **演示机位为了跑得快只生成约 620 个参数**（真机 3331），但**关键那几项用的是真机同名参数与量程**
   （`ItemAudioOutCh1/2Adjust` 0…255 偏移 128、`ItemTallyR/GStatus`），所以演示跑的就是正式那条路径。
