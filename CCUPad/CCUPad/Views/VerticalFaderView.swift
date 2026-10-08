@@ -20,7 +20,7 @@ struct VerticalFaderView: View {
     var onCommit: (Double) -> Void
 
     @State private var dragging = false
-    @State private var localValue: Double?
+    @State private var localValue: Double? = nil
 
     private var shownValue: Double {
         localValue ?? channel.value

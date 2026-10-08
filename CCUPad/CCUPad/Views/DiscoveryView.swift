@@ -17,19 +17,19 @@ import Combine
 struct DiscoveryView: View {
     @EnvironmentObject private var manager: CCUManager
 
-    @State private var selectedDevice: UUID?
+    @State private var selectedDevice: UUID? = nil
     @State private var search = ""
-    @State private var roleFilter: ItemRole?
+    @State private var roleFilter: ItemRole? = nil
     @State private var writableOnly = false
     @State private var liveRefresh = true
     @State private var tick = Date()
 
-    @State private var bindingItem: CCUItem?
+    @State private var bindingItem: CCUItem? = nil
     @State private var gainTitle = ""
     @State private var divisorText = "1"
     @State private var unitText = "dB"
 
-    @State private var message: String?
+    @State private var message: String? = nil
 
     private let timer = Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()
 

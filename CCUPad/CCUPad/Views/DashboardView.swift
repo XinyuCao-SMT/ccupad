@@ -12,7 +12,7 @@ struct DashboardView: View {
 
     @State private var showBulkConfirm = false
     @State private var bulkText = ""
-    @State private var bulkAction: (() -> Void)?
+    @State private var bulkAction: (() -> Void)? = nil
 
     private let columns = [GridItem(.adaptive(minimum: 340), spacing: 14)]
 

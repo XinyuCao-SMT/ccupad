@@ -25,12 +25,12 @@ final class CCUSession {
 
     private(set) var items: [String: CCUItem] = [:]
     private(set) var status: CCUStatus = .idle
-    private(set) var connectedAt: Date?
+    private(set) var connectedAt: Date? = nil
 
     /// 界面回调（都在主线程）。
-    var onItemsChanged: (() -> Void)?
-    var onStatusChanged: ((CCUStatus) -> Void)?
-    var onLog: ((String) -> Void)?
+    var onItemsChanged: (() -> Void)? = nil
+    var onStatusChanged: ((CCUStatus) -> Void)? = nil
+    var onLog: ((String) -> Void)? = nil
 
     private struct VerifyTicket {
         var expected: MPValue
@@ -44,7 +44,7 @@ final class CCUSession {
     private var failedWrites: [String: String] = [:]
 
     private var lastItemChange = Date()
-    private var tickTimer: DispatchSourceTimer?
+    private var tickTimer: DispatchSourceTimer? = nil
     private var settled = false
     private var stopped = false
 

@@ -94,7 +94,7 @@ struct GainChannel: Identifiable, Hashable {
     var unit: String = "dB"
     var writable: Bool = true
     var pending: Bool = false
-    var problem: String?
+    var problem: String? = nil
 
     var id: String { itemName }
 
@@ -138,8 +138,8 @@ struct CCUDeviceState: Identifiable {
     var firmware: String = ""
     var gains: [GainChannel] = []
     var tally: TallyState = .unknown
-    var lastError: String?
-    var updatedAt: Date?
+    var lastError: String? = nil
+    var updatedAt: Date? = nil
 
     init(id: UUID) {
         self.id = id

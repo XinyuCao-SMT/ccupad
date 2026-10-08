@@ -12,7 +12,7 @@ struct DevicesView: View {
     @EnvironmentObject private var manager: CCUManager
 
     @State private var showAdd = false
-    @State private var editing: CCUDevice?
+    @State private var editing: CCUDevice? = nil
 
     var body: some View {
         NavigationStack {
@@ -131,9 +131,9 @@ struct AddDevicesSheet: View {
     @State private var base = "100"
     @State private var digits = "2"
 
-    @State private var testResult: String?
+    @State private var testResult: String? = nil
     @State private var testing = false
-    @State private var errorText: String?
+    @State private var errorText: String? = nil
 
     var body: some View {
         NavigationStack {

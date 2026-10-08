@@ -30,21 +30,21 @@ final class WebSocketClient {
     let path: String
 
     private let queue = DispatchQueue(label: "ccupad.websocket")
-    private var connection: NWConnection?
+    private var connection: NWConnection? = nil
     private var buffer = Data()
     private var handshakeComplete = false
     private var closed = true
     private var expectedAccept = ""
-    private var timeoutItem: DispatchWorkItem?
+    private var timeoutItem: DispatchWorkItem? = nil
 
     // 分片帧的拼接状态
     private var pendingOpcode: UInt8 = 0
     private var pendingPayload = Data()
 
-    var onStateChange: ((State) -> Void)?
-    var onMessage: ((MPValue) -> Void)?
-    var onError: ((String) -> Void)?
-    var onClose: (() -> Void)?
+    var onStateChange: ((State) -> Void)? = nil
+    var onMessage: ((MPValue) -> Void)? = nil
+    var onError: ((String) -> Void)? = nil
+    var onClose: (() -> Void)? = nil
 
     init(host: String, port: UInt16 = 80, path: String = "/linear") {
         self.host = host

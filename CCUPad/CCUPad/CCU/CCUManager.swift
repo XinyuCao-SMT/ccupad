@@ -20,7 +20,7 @@ final class CCUManager: ObservableObject {
     @Published private(set) var maps: [UUID: ParameterMap] = [:]
     @Published private(set) var logs: [LogEntry] = []
     @Published var settings = AppSettings()
-    @Published private(set) var lastExport: String?
+    @Published private(set) var lastExport: String? = nil
 
     private var sessions: [UUID: CCUSession] = [:]
     private var passwords: [UUID: String] = [:]

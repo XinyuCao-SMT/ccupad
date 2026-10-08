@@ -18,9 +18,9 @@ import CryptoKit
 struct DigestChallenge {
     var realm: String = ""
     var nonce: String = ""
-    var qop: String?
-    var opaque: String?
-    var algorithm: String?
+    var qop: String? = nil
+    var opaque: String? = nil
+    var algorithm: String? = nil
 
     /// 从 WWW-Authenticate 头里解析出挑战。
     ///

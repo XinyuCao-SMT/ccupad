@@ -42,8 +42,8 @@ struct ParameterMap: Codable, Hashable {
 
     /// tally 用哪个参数：分别给「播出」与「预览」各绑一个。
     /// 有些设备的 tally 是一个状态位图参数，那就两个都绑同一个，再靠阈值区分。
-    var tallyPgmItem: String?
-    var tallyPvwItem: String?
+    var tallyPgmItem: String? = nil
+    var tallyPvwItem: String? = nil
 
     /// 数值 >= 阈值 视为点亮。0/1 型参数填 0.5 就行。
     var tallyThreshold: Double = 0.5

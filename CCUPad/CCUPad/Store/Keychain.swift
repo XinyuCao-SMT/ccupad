@@ -36,7 +36,7 @@ enum Keychain {
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
-        var item: CFTypeRef?
+        var item: CFTypeRef? = nil
         guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
               let data = item as? Data,
               let text = String(data: data, encoding: .utf8) else {
