@@ -219,8 +219,9 @@ console.log(`  ${branch} -> ${parentSha.slice(0, 7)}`);
 // ---------------------------------------------------------------- tags
 try {
   const localTags = git('tag', '-l').trim().split('\n').filter(Boolean);
+  // 用 /tags 而不是 /git/refs/tags：仓库一个标签都没有时后者返回 404
   const remoteTags = new Set(
-    ((await api('GET', `/repos/${OWNER}/${REPO}/git/refs/tags`)) ?? []).map((r) => r.ref.replace('refs/tags/', ''))
+    ((await api('GET', `/repos/${OWNER}/${REPO}/tags?per_page=100`)) ?? []).map((t) => t.name)
   );
   for (const tag of localTags) {
     if (remoteTags.has(tag)) continue;

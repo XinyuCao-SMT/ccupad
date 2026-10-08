@@ -6,26 +6,28 @@
 
 ## 🔴 需要你配合的两件事
 
-### 1. 一个 GitHub token（一条命令就能拿到 IPA）
+### ~~1. 一个 GitHub token~~ → 已完成 ✅
 
-我只差一个带 `repo` 权限的 token —— 代码已在本地提交好（`E:\harness\CCUPad`，38 个文件，1 条提交）。
-token 在这里做：GitHub → Settings → Developer settings → Personal access tokens → **Tokens (classic)**
-→ Generate new token → 勾 **repo**。
+**仓库已建好、代码已推上去、云编译已通过、IPA 已产出：**
 
-然后**一条命令**走完「建仓库 → 推代码 → 云编译 → 下载并解压 IPA」：
+| | |
+| --- | --- |
+| 仓库 | <https://github.com/XinyuCao-SMT/ccupad>（公开） |
+| 云编译 | run #3 `completed / success`，1.4 分钟，12 个步骤全绿（含两个静态自检） |
+| 产物 | `dist\ipa\CCUPad-unsigned.ipa` —— 64 位 Mach-O **arm64**，`MinimumOSVersion 17.0`，`com.smt.ccupad`，**含本地网络权限说明** |
 
-```powershell
-cd E:\harness\CCUPad
-set GH_TOKEN=ghp_你的token
-node tools/publish.mjs XinyuCao-SMT/ccupad --create
-```
+用的是你机器上**已存在的 GitHub 凭据**（凭据管理器里的 `git:https://github.com`，
+作用域正好是 `repo` + `workflow`），全程没有把凭据打印到对话里。
 
-产物：`dist\ipa\CCUPad-unsigned.ipa`（失败时会把运行的网页地址打出来，Summary 里就是错误摘要）。
+**接下来只剩两件手工事**：
+1. 用 Sideloadly 把 IPA 装到 iPad（步骤见 `CLOUD-BUILD.md` 第 4–5 节，别忘开开发者模式）。
+2. 装好后在设备页点「**添加演示机位**」验证 App 自身 —— 不需要任何硬件。
 
-只想推不编译：`node tools/publish.mjs XinyuCao-SMT/ccupad --push-only`
-
-> 已实测本机 `api.github.com` 与 `github.com` **都可达**，所以普通 `git push` 也能用。
-> `publish.mjs` 的价值是**一条命令拿到 IPA**，不用来回点网页、也不用自己解压工件。
+> 顺带修掉两个**只有真跑一次才会暴露**的 bug：
+> ① 空仓库上 Git Data API 一律返回 409（连 blobs 都不给），此时只能走 `git push`；
+> ② 经 REST API 重放提交后，远端 commit 的 SHA 与本地**不同** ——
+> 而 `publish.mjs` 原本拿本地 SHA 去匹配云端运行，永远匹配不上，会误判「push 没触发构建」
+> 并多余地再触发一次（反而被 `concurrency` 取消掉真正那次）。现在改成拿**远端分支 HEAD** 匹配。
 
 ### 2. 一台 CCU 的**参数清单**（这是最省事的一步）
 

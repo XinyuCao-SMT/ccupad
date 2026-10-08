@@ -99,14 +99,32 @@ if (hasFlag('--push-only')) {
 // ---------------------------------------------------------------- 2. 等这次提交的构建
 console.log('\n══ 2/4 等云端编译 ══');
 
-const headSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: REPO_DIR, encoding: 'utf8' }).trim();
-console.log(`  本地提交 ${headSha.slice(0, 7)}`);
+const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: REPO_DIR, encoding: 'utf8' }).trim();
+
+// ⚠️ 关键：用 REST API 重放提交时，远端会生成**新的 commit 对象**，SHA 与本地不同。
+// 所以必须拿**远端分支的 HEAD** 去匹配云端运行 —— 拿本地 SHA 永远匹配不上，
+// 会误判成「push 没触发构建」，然后多余地再触发一次（还会因 concurrency 取消掉真正那次）。
+async function remoteHeadSha() {
+  try {
+    const commit = await api('GET', `/repos/${OWNER}/${REPO}/commits/${BRANCH}`);
+    return commit?.sha ?? null;
+  } catch (e) {
+    if (e.status === 404 || e.status === 409) return null;
+    throw e;
+  }
+}
+
+const headSha = (await remoteHeadSha()) ?? localSha;
+console.log(`  本地提交 ${localSha.slice(0, 7)} → 远端提交 ${headSha.slice(0, 7)}`);
 
 /** 找 head_sha 等于这次提交的运行（push 会自己触发，所以先等一下）。 */
 async function findRun(sha) {
   try {
-    const runs = await api('GET', `/repos/${OWNER}/${REPO}/actions/runs?branch=${BRANCH}&per_page=10`);
-    return (runs?.workflow_runs ?? []).find((r) => r.head_sha === sha) ?? null;
+    const runs = await api('GET', `/repos/${OWNER}/${REPO}/actions/runs?branch=${BRANCH}&per_page=20`);
+    const mine = (runs?.workflow_runs ?? []).filter((r) => r.head_sha === sha);
+    if (mine.length === 0) return null;
+    // 优先还没被取消的那一次
+    return mine.find((r) => r.conclusion !== 'cancelled') ?? mine[0];
   } catch (e) {
     if (e.status === 404) return null;
     throw e;

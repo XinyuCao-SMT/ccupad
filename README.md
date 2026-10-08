@@ -6,10 +6,18 @@
 SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebSocket / MessagePack 全部自己实现，
 所以云端编译不需要解析任何 Swift Package。
 
-> **状态：代码完成，静态自检通过，尚未在真机上跑过。**
+> **状态：已在 GitHub Actions 上编译通过（1.4 分钟，产物 arm64 / iOS 17.0），未签名 IPA 已产出。**
+>
+> | | |
+> | --- | --- |
+> | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
+> | 产物 | `dist/ipa/CCUPad-unsigned.ipa`（1.66 MB 主程序，含本地网络权限说明） |
+>
 > 协议层是照 [`ccu-studio`](../ccu-studio) 在真机上验证过的实现逐条复刻的
-> （同一套 HTTP Digest 挑战取法、同一个 `ws://<ip>/linear` 升级写法、同一份 MessagePack 编解码），
-> 但 `CCUPad` 自己还没连过真机。
+> （同一套 HTTP Digest 挑战取法、同一个 `ws://<ip>/linear` 升级写法、同一份 MessagePack 编解码）。
+>
+> **但还没在真机上跑过、也没连过真机 CCU。** 装好后可以先加一台**演示机位**验证 App 自身，
+> 不需要任何硬件；见第 5 节第 0 步。
 > **另外有一件事必须由你在真机上确认**，见下面第 2 节 —— 索尼没有公开 CCU 的完整参数名表。
 
 ---
