@@ -6,20 +6,26 @@
 
 ## 🔴 需要你配合的两件事
 
-### 1. 一个 GitHub token（用来建仓库 + 推代码）
+### 1. 一个 GitHub token（一条命令就能拿到 IPA）
 
-推送脚本靠 `GH_TOKEN` 环境变量。我没有这个 token，所以**代码目前只在本地**：
-`E:\harness\CCUPad`（已 `git init` 并提交）。
+我只差一个带 `repo` 权限的 token —— 代码已在本地提交好（`E:\harness\CCUPad`，38 个文件，1 条提交）。
+token 在这里做：GitHub → Settings → Developer settings → Personal access tokens → **Tokens (classic)**
+→ Generate new token → 勾 **repo**。
 
-你给一个带 `repo` 权限的 token（或者你自己跑这两条命令也行）：
+然后**一条命令**走完「建仓库 → 推代码 → 云编译 → 下载并解压 IPA」：
 
 ```powershell
 cd E:\harness\CCUPad
 set GH_TOKEN=ghp_你的token
-node tools/push-via-api.mjs 你的用户名/ccupad --create
+node tools/publish.mjs XinyuCao-SMT/ccupad --create
 ```
 
-推上去之后，Actions 里手动跑一次 **Build unsigned IPA** 就能拿到 IPA。
+产物：`dist\ipa\CCUPad-unsigned.ipa`（失败时会把运行的网页地址打出来，Summary 里就是错误摘要）。
+
+只想推不编译：`node tools/publish.mjs XinyuCao-SMT/ccupad --push-only`
+
+> 已实测本机 `api.github.com` 与 `github.com` **都可达**，所以普通 `git push` 也能用。
+> `publish.mjs` 的价值是**一条命令拿到 IPA**，不用来回点网页、也不用自己解压工件。
 
 ### 2. 一台 CCU 的**参数清单**（这是最省事的一步）
 

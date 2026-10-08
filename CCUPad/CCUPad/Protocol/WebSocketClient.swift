@@ -58,6 +58,11 @@ final class WebSocketClient {
 
     /// 用已经算好的 Digest Authorization 发起升级。
     func connect(authorization: String, origin: String, timeout: TimeInterval = 10) {
+        guard let endpointPort = NWEndpoint.Port(rawValue: port) else {
+            onError?("端口 \(port) 不合法")
+            return
+        }
+
         closed = false
         handshakeComplete = false
         buffer = Data()
@@ -68,7 +73,7 @@ final class WebSocketClient {
         expectedAccept = Digest.webSocketAccept(for: key)
 
         let connection = NWConnection(host: NWEndpoint.Host(host),
-                                     port: NWEndpoint.Port(rawValue: port) ?? 80,
+                                     port: endpointPort,
                                      using: .tcp)
         self.connection = connection
 

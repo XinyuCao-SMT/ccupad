@@ -34,10 +34,9 @@ GitHub 右上角 **+ → New repository** → 名字例如 `ccupad` → 选 **Pu
 
 ---
 
-## 2 · 把代码推上去
+## 2 · 把代码推上去（并让云端编译）
 
-本机的 `github.com:443` 有时连不通（连接被重置），但 `api.github.com:443` 正常。
-所以仓库里带了一个**只靠 REST API 推送**的脚本，行为等价于 `git push`（快进，不强制覆盖）：
+### 一条命令（推荐）
 
 ```powershell
 cd E:\harness\CCUPad
@@ -46,14 +45,32 @@ cd E:\harness\CCUPad
 #    → Tokens (classic) → Generate new token → 勾 "repo" → 复制
 set GH_TOKEN=ghp_你的token
 
-# 2) 推（第一次加 --create，仓库不存在就自动建）
+# 2) 一条命令：建仓库 → 推代码 → 等云编译 → 下载并解压出 IPA
+node tools/publish.mjs 你的用户名/ccupad --create
+```
+
+跑完在 `dist\ipa\CCUPad-unsigned.ipa` 拿到**未签名 IPA**，接着看第 4 节侧载即可。
+
+`publish.mjs` 会自己判断这次提交有没有触发构建（工作流本来就在 push 时触发），
+所以不会白跑两次；万一只改了文档没命中触发条件，它会手动触发一次。
+
+### 手动方式
+
+```powershell
+set GH_TOKEN=ghp_你的token
+
+# 只推送（--create 表示仓库不存在就建）
 node tools/push-via-api.mjs 你的用户名/ccupad --create
 ```
 
-成功的话最后会打印 `main -> xxxxxxx` 和 `完成`。
+然后到仓库页面：**Actions** → 左侧 **Build unsigned IPA** → **Run workflow**
+（分支 `main`，配置 `Release`）→ 4–6 分钟后在运行页底部 **Artifacts** 下载
+`CCUPad-unsigned-ipa`，解压得到 `CCUPad-unsigned.ipa`。
 
-> 想用普通 `git push` 也行：`git remote add origin https://github.com/你/ccupad.git` 然后推。
-> 脚本存在只是为了绕开连不上 github.com 的网络。
+> 为什么有推送脚本：有些网络下 `github.com:443` 连不通（连接被重置），
+> 但 `api.github.com:443` 正常，于是 `git push` 直接失败。
+> 这个脚本用 REST API 逐个重放提交，行为等价于 `git push`（快进，不强制覆盖）。
+> **本机实测两个域名都可达**，所以普通 `git remote add` + `git push` 同样可以用。
 >
 > Token 只在本机用，不会进仓库。
 

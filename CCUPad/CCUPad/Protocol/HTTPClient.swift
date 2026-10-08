@@ -43,9 +43,16 @@ enum HTTPClient {
                     timeout: TimeInterval = 8,
                     completion: @escaping (Result<HTTPResponse, Error>) -> Void) {
 
+        // 端口先转成 Network.framework 的类型：不合法的端口直接失败，
+        // 不要靠 `?? 80` 这种依赖字面量推断的写法。
+        guard let endpointPort = NWEndpoint.Port(rawValue: port) else {
+            completion(.failure(HTTPClientError.connectFailed("端口 \(port) 不合法")))
+            return
+        }
+
         let queue = DispatchQueue(label: "ccupad.http")
         let connection = NWConnection(host: NWEndpoint.Host(host),
-                                     port: NWEndpoint.Port(rawValue: port) ?? 80,
+                                     port: endpointPort,
                                      using: .tcp)
 
         var buffer = Data()

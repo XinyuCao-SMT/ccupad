@@ -298,11 +298,11 @@ struct DiscoveryView: View {
         NavigationStack {
             Form {
                 Section("设备参数") {
-                    LabeledContent("参数名", value: item.name)
-                    LabeledContent("参数 ID", value: String(item.numericId))
-                    LabeledContent("类型", value: item.itemType.isEmpty ? "—" : item.itemType)
-                    LabeledContent("当前值", value: item.displayValue)
-                    LabeledContent("范围", value: item.rangeText.isEmpty ? "—" : item.rangeText)
+                    infoRow("参数名", item.name)
+                    infoRow("参数 ID", String(item.numericId))
+                    infoRow("类型", item.itemType.isEmpty ? "—" : item.itemType)
+                    infoRow("当前值", item.displayValue)
+                    infoRow("范围", item.rangeText.isEmpty ? "—" : item.rangeText)
                 }
 
                 Section("通道设置") {
@@ -345,6 +345,17 @@ struct DiscoveryView: View {
     }
 
     // MARK: - 派生数据
+
+    private func infoRow(_ title: String, _ value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(title)
+            Spacer(minLength: 8)
+            Text(value)
+                .foregroundStyle(Color.secondary)
+                .multilineTextAlignment(.trailing)
+                .lineLimit(2)
+        }
+    }
 
     private var activeDevice: UUID? {
         if let selected = selectedDevice,

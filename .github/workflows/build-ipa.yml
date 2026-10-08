@@ -55,16 +55,19 @@ jobs:
           echo "--- 四层以内（已排除 .git）---"
           find "$GITHUB_WORKSPACE" -maxdepth 4 -not -path '*/.git/*' -not -name '.git' | sort | head -100
 
-      # 先在云上跑一遍 Windows 侧那套静态自检，把「源文件没进工程」这类
-      # 低级错误在编译之前就暴露出来（不通过也不拦构建，只作为线索）。
+      # 先在云上跑一遍 Windows 侧那几套静态自检，把「源文件没进工程」
+      # 「调用了不存在的方法 / 参数标签不对」这类错误在编译之前就暴露出来
+      # （不通过也不拦构建，只作为线索）。cloud 上有 node，直接跑。
       - name: 静态自检（提示用，不拦构建）
         continue-on-error: true
         run: |
           for d in "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/CCUPad"; do
-            if [ -f "$d/tools/check-sources.mjs" ]; then
-              echo "--- $d ---"
-              (cd "$d" && node tools/check-sources.mjs) || true
-            fi
+            for tool in check-sources.mjs check-calls.mjs; do
+              if [ -f "$d/tools/$tool" ]; then
+                echo "--- $d/tools/$tool ---"
+                (cd "$d" && node "tools/$tool") || true
+              fi
+            done
           done
 
       - name: 定位 Xcode 工程

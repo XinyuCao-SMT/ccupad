@@ -86,13 +86,36 @@ open CCUPad/CCUPad.xcodeproj
 > ```bash
 > cd CCUPad && node tools/generate-xcodeproj.mjs
 > ```
+>
+> 在没有 Swift 编译器的机器上（例如 Windows），提交前建议跑一遍两个静态自检 ——
+> 它们专门抓「明明没编译过、却能提前发现」的那类错误：
+> ```bash
+> cd CCUPad
+> node tools/check-sources.mjs   # 括号配平 / 跨文件重名 / 源文件是否都进了工程 / ViewBuilder 上限
+> node tools/check-calls.mjs     # 我们自己的方法是否存在、参数标签与声明是否一致
+> ```
+> `check-calls.mjs` 是这套工程里最值钱的一个自检：Swift 最常见的两个编译错误
+> （`has no member 'x'` 和 `missing argument label 'y:'`）它都能在本地提前抓出来。
+> CI 里也会跑这两个脚本（不拦构建，只把结果打进日志）。
 
 ### 路线 B：只有 Windows（GitHub Actions 云 Mac 编译 + 侧载）
 
 Windows 上无法编译 iOS 应用，用云端 macOS 编出**未签名 IPA**，再用自己的 Apple ID 签名安装。
 完整步骤见 **[`CLOUD-BUILD.md`](CLOUD-BUILD.md)**。最短路径：
 
-1. 建仓库并推代码（`tools/push-via-api.mjs` 可以只用 `api.github.com` 完成推送，甚至自动建仓库）。
+**一条命令拿到 IPA**（推荐）：
+
+```powershell
+cd CCUPad
+set GH_TOKEN=ghp_你的token
+node tools/publish.mjs 你的用户名/ccupad --create
+```
+
+它会建仓库 → 推代码 → 等这次提交的云编译跑完 → 下载工件并解压出 `dist\ipa\CCUPad-unsigned.ipa`。
+
+**或者手动走网页：**
+
+1. 建仓库并推代码（`tools/push-via-api.mjs` 只靠 `api.github.com` 就能推，还能自动建仓库）。
 2. 仓库 → **Actions** → **Build unsigned IPA** → **Run workflow**。
 3. 4–6 分钟后在 **Artifacts** 下载 `CCUPad-unsigned-ipa`，解压得到 `CCUPad-unsigned.ipa`。
 4. 用 [Sideloadly](https://sideloadly.io/) 拖进去，Apple ID 填自己的，Start。
@@ -124,10 +147,12 @@ CCUPad/                                <- 仓库根目录
 ├─ CLOUD-BUILD.md                      <- 云端编译 + Windows 侧载保姆级步骤
 ├─ NEXT-STEPS.md                       <- 待办与已知边界
 ├─ tools/push-via-api.mjs              <- 只靠 api.github.com 推送（还能建仓库）
+├─ tools/publish.mjs                   <- 一条命令：推送 → 云编译 → 下载解压出 IPA
 └─ CCUPad/                             <- Xcode 工程目录
    ├─ CCUPad.xcodeproj/                <- 已生成，可直接打开
    ├─ tools/generate-xcodeproj.mjs     <- 增删源文件后重新生成工程
-   ├─ tools/check-sources.mjs          <- Windows 上的静态自检
+   ├─ tools/check-sources.mjs          <- 静态自检：配平 / 重名 / 源文件是否进工程
+   ├─ tools/check-calls.mjs            <- 静态自检：方法是否存在 / 参数标签是否匹配
    └─ CCUPad/
       ├─ App/        CCUPadApp.swift
       ├─ Protocol/   MessagePack · DigestAuth · HTTPClient · WebSocketClient
