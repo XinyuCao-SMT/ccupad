@@ -21,10 +21,15 @@ final class CCUManager: ObservableObject {
     @Published private(set) var logs: [LogEntry] = []
     @Published var settings = AppSettings()
     @Published private(set) var lastExport: String? = nil
+    /// 增益快照（回滚用）。最近的在最前面。
+    @Published private(set) var snapshots: [GainSnapshot] = []
 
     private var sessions: [UUID: CCUConnection] = [:]
     private var passwords: [UUID: String] = [:]
     private var reconnecting: Set<UUID> = []
+
+    /// 最多留多少张增益快照（够回退到本次操作之前即可，不必无限增长）。
+    private static let snapshotLimit = 30
     private var lastRebuild: [UUID: Date] = [:]
 
     /// tally 的两种角色。
@@ -44,6 +49,7 @@ final class CCUManager: ObservableObject {
         devices = AppStore.loadDevices()
         maps = AppStore.loadMaps()
         settings = AppStore.loadSettings()
+        snapshots = AppStore.loadSnapshots()
     }
 
     // MARK: - 查询
@@ -552,7 +558,8 @@ final class CCUManager: ObservableObject {
 
     /// 所有机位一起加 / 减。
     func adjustAllGains(by delta: Double) {
-        for device in devices where device.enabled {
+        captureSnapshotsForAllDevices(reason: "批量 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
+        for device in connectedDevices() {
             guard let state = states[device.id] else { continue }
             for channel in state.gains where channel.writable {
                 setGain(device: device.id, channel: channel, displayValue: channel.value + delta, commit: true)
@@ -563,7 +570,8 @@ final class CCUManager: ObservableObject {
 
     /// 所有机位设到同一个值（归零就是这里传 0）。
     func setAllGains(to displayValue: Double) {
-        for device in devices where device.enabled {
+        captureSnapshotsForAllDevices(reason: "批量设为 \(GainChannel.format(displayValue, unit: "dB"))")
+        for device in connectedDevices() {
             guard let state = states[device.id] else { continue }
             for channel in state.gains where channel.writable {
                 setGain(device: device.id, channel: channel, displayValue: displayValue, commit: true)
@@ -573,7 +581,11 @@ final class CCUManager: ObservableObject {
     }
 
     func setDeviceGains(_ id: UUID, to displayValue: Double) {
-        guard let state = states[id] else { return }
+        guard let state = states[id], state.status.isConnected else {
+            appendLog(deviceLabel(id), "未连接，未下发")
+            return
+        }
+        captureGainSnapshot(id, reason: "整台设为 \(GainChannel.format(displayValue, unit: "dB"))")
         for channel in state.gains where channel.writable {
             setGain(device: id, channel: channel, displayValue: displayValue, commit: true)
         }
@@ -582,11 +594,111 @@ final class CCUManager: ObservableObject {
 
     /// 某一台设备的全部通道一起加 / 减。
     func adjustGains(_ id: UUID, by delta: Double) {
-        guard let state = states[id] else { return }
+        guard let state = states[id], state.status.isConnected else {
+            appendLog(deviceLabel(id), "未连接，未下发")
+            return
+        }
+        captureGainSnapshot(id, reason: "整台 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
         for channel in state.gains where channel.writable {
             setGain(device: id, channel: channel, displayValue: channel.value + delta, commit: true)
         }
         appendLog(deviceLabel(id), "全部通道 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
+    }
+
+    // MARK: - 增益快照与回滚
+    //
+    // 纪律照 ccu-studio：**下发前先拍快照**，出问题能退回来。
+    // 试运行模式下不拍（反正没写设备），未连接的设备也拍不到。
+
+    private func connectedDevices() -> [CCUDevice] {
+        devices.filter { $0.enabled && state($0.id).status.isConnected }
+    }
+
+    private func captureSnapshotsForAllDevices(reason: String) {
+        guard !settings.dryRun else { return }
+        for device in connectedDevices() {
+            captureGainSnapshot(device.id, reason: reason)
+        }
+    }
+
+    /// 抓一张当前增益快照（只含已绑定且可读的通道），存的是设备原始值。
+    @discardableResult
+    func captureGainSnapshot(_ id: UUID, reason: String) -> GainSnapshot? {
+        guard let session = sessions[id] else { return nil }
+        let map = maps[id] ?? ParameterMap()
+        guard !map.gainChannels.isEmpty else { return nil }
+
+        let items = session.snapshot(for: map.gainChannels.map { $0.itemName })
+        var values: [String: Double] = [:]
+        for binding in map.gainChannels {
+            if let item = items[binding.itemName], let number = item.value.number {
+                values[binding.itemName] = number
+            }
+        }
+        guard !values.isEmpty else { return nil }
+
+        let snapshot = GainSnapshot(deviceId: id,
+                                    deviceLabel: deviceLabel(id),
+                                    reason: reason,
+                                    values: values)
+        snapshots.insert(snapshot, at: 0)
+        if snapshots.count > Self.snapshotLimit {
+            snapshots.removeLast(snapshots.count - Self.snapshotLimit)
+        }
+        AppStore.saveSnapshots(snapshots)
+        appendLog(snapshot.deviceLabel, "已拍增益快照（\(snapshot.channelCount) 路）· \(reason)")
+        return snapshot
+    }
+
+    /// 手动拍一张（放在界面上，操作前想稳妥就按一下）。
+    func captureNow(_ id: UUID) {
+        if captureGainSnapshot(id, reason: "手动快照") == nil {
+            appendLog(deviceLabel(id), "拍不了快照：设备未连接，或这台设备还没绑定增益通道")
+        }
+    }
+
+    /// 把某台设备回滚到快照里的增益值。
+    func restoreGainSnapshot(_ snapshot: GainSnapshot) {
+        guard let state = states[snapshot.deviceId] else {
+            appendLog(snapshot.deviceLabel, "设备已不在清单里，无法回滚")
+            return
+        }
+        guard state.status.isConnected else {
+            appendLog(snapshot.deviceLabel, "未连接，无法回滚（先连上设备）")
+            return
+        }
+
+        var restored = 0
+        var skipped = 0
+        for (itemName, raw) in snapshot.values {
+            guard let channel = state.gains.first(where: { $0.itemName == itemName }) else {
+                skipped += 1
+                continue
+            }
+            let divisor = channel.divisor == 0 ? 1 : channel.divisor
+            setGain(device: snapshot.deviceId,
+                    channel: channel,
+                    displayValue: raw / divisor,
+                    commit: true)
+            restored += 1
+        }
+        let note = skipped > 0 ? "，跳过 \(skipped) 路（已解绑）" : ""
+        appendLog(snapshot.deviceLabel, "回滚到 \(snapshot.timeText) 的快照：写入 \(restored) 路\(note)")
+    }
+
+    /// 撤销最近一次下发（= 回滚到最近一张快照）。
+    func undoLastChange() {
+        guard let latest = snapshots.first else {
+            appendLog("全部", "还没有任何快照，无法撤销")
+            return
+        }
+        restoreGainSnapshot(latest)
+    }
+
+    func clearSnapshots() {
+        snapshots.removeAll()
+        AppStore.saveSnapshots(snapshots)
+        appendLog("全部", "已清空全部增益快照")
     }
 
     // MARK: - 参数发现

@@ -75,6 +75,10 @@ struct DashboardView: View {
                         manager.setAllGains(to: 0)
                     }
                 }
+
+                actionButton("撤销上次下发", systemImage: "arrow.uturn.backward") {
+                    manager.undoLastChange()
+                }
             }
             .padding(.vertical, 2)
         }

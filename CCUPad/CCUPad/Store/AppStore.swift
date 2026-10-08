@@ -12,6 +12,7 @@ enum AppStore {
     private static let devicesKey = "ccupad.devices.v1"
     private static let mapsKey = "ccupad.parametermaps.v1"
     private static let settingsKey = "ccupad.settings.v1"
+    private static let snapshotsKey = "ccupad.gainsnapshots.v1"
 
     // MARK: 设备清单
 
@@ -62,6 +63,21 @@ enum AppStore {
     static func saveSettings(_ settings: AppSettings) {
         guard let data = try? JSONEncoder().encode(settings) else { return }
         UserDefaults.standard.set(data, forKey: settingsKey)
+    }
+
+    // MARK: 增益快照（回滚用）
+
+    static func loadSnapshots() -> [GainSnapshot] {
+        guard let data = UserDefaults.standard.data(forKey: snapshotsKey),
+              let list = try? JSONDecoder().decode([GainSnapshot].self, from: data) else {
+            return []
+        }
+        return list
+    }
+
+    static func saveSnapshots(_ snapshots: [GainSnapshot]) {
+        guard let data = try? JSONEncoder().encode(snapshots) else { return }
+        UserDefaults.standard.set(data, forKey: snapshotsKey)
     }
 
     // MARK: 导出

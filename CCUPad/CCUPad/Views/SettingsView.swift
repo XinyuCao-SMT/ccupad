@@ -14,6 +14,7 @@ struct SettingsView: View {
                 sendSection
                 connectionSection
                 bindingSection
+                snapshotSection
                 logSection
                 aboutSection
             }
@@ -107,8 +108,49 @@ struct SettingsView: View {
         return parts.joined(separator: " · ")
     }
 
-    // MARK: - 日志
+    // MARK: - 增益快照与回滚
 
+    /// 下发是真的写设备，所以每次批量操作前都会自动拍一张快照 —— 这里能退回去。
+    private var snapshotSection: some View {
+        Section("增益快照与回滚") {
+            if manager.snapshots.isEmpty {
+                Text("还没有快照。批量下发前会自动拍一张（试运行不拍），也可以在主控台按「拍快照」。")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            } else {
+                ForEach(manager.snapshots.prefix(8)) { snapshot in
+                    HStack(spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(snapshot.timeText)  \(snapshot.deviceLabel)")
+                                .font(.caption)
+                            Text("\(snapshot.channelCount) 路 · \(snapshot.reason)")
+                                .font(.caption2)
+                                .foregroundStyle(Color.secondary)
+                        }
+                        Spacer(minLength: 4)
+                        Button("回滚") {
+                            manager.restoreGainSnapshot(snapshot)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                }
+            }
+
+            Button("撤销上一次下发") {
+                manager.undoLastChange()
+            }
+            .disabled(manager.snapshots.isEmpty)
+
+            if !manager.snapshots.isEmpty {
+                Button("清空全部快照", role: .destructive) {
+                    manager.clearSnapshots()
+                }
+            }
+        }
+    }
+
+    // MARK: - 日志
     private var logSection: some View {
         Section("日志") {
             Button("清空日志") {
@@ -131,7 +173,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section("关于") {
-            Text("CCUPad 0.1.0")
+            Text("CCUPad 0.2.0")
 
             Text("协议：HTTP Digest（MD5 / qop=auth）+ ws://<ip>/linear + MessagePack，与 ccu-studio 在 HDCU-3500 / 3100 上验证过的实现一致。")
                 .font(.caption2)

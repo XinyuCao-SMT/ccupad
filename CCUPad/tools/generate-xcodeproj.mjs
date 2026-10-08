@@ -26,7 +26,10 @@ const sourcesAbs = path.join(rootDir, sourcesDirName);
 
 // 应用内「设置 → 关于」显示的版本号（MARKETING_VERSION）。
 // 每次发版改这一处，重新生成工程即可，不用手动动 pbxproj。
-const appVersion = '0.1.0';
+//
+// ⚠️ 这个值必须与发版 tag 的版本号一致 —— `tools/release.mjs` 会强制校验，
+//    不一致就拒绝发版（否则 IPA 里写着一个版本号、tag 却是另一个，回滚时对不上）。
+const appVersion = '0.2.0';
 
 if (!fs.existsSync(sourcesAbs)) {
     console.error(`找不到源码目录: ${sourcesAbs}`);
