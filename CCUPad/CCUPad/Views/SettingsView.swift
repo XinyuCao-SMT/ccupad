@@ -174,9 +174,40 @@ struct SettingsView: View {
 
     // MARK: - 关于
 
+    /// 版本号从包里读 —— 以前这里硬编码版本字符串，每次发版都得记得改一处，容易漏。
+    private var appVersionText: String {
+        (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "—"
+    }
+
+    private var appBuildText: String {
+        (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "—"
+    }
+
     private var aboutSection: some View {
         Section("关于") {
-            Text("CCUPad 0.6.0")
+            VStack(spacing: 10) {
+                Image("Logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 240)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .accessibilityHidden(true)
+
+                Text(verbatim: "CCUPad \(appVersionText)")
+                    .font(.headline)
+
+                Text(L10n.f("开发者：%@", "SMT-Xinyu Cao"))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+
+                Text(L10n.f("构建 %@", appBuildText))
+                    .font(.caption2)
+                    .foregroundStyle(Color.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
 
             Text("协议：HTTP Digest（MD5 / qop=auth）+ ws://<ip>/linear + MessagePack，与 ccu-studio 在 HDCU-3500 / 3100 上验证过的实现一致。")
                 .font(.caption2)

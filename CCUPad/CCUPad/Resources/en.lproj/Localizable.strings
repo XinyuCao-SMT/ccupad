@@ -150,6 +150,10 @@
 "已保存管理密码" = "Admin password saved";
 "保存失败（Keychain 写入被拒绝）" = "Save failed (Keychain refused the write)";
 
+/* ── 关于页 ── */
+"开发者：%@" = "Developer: %@";
+"构建 %@" = "Build %@";
+
 /* ── 设置页里带插值的两行（%lld = 整数） ── */
 "重连间隔 %lld 秒" = "Reconnect every %lld s";
 "参数列表最多显示 %lld 行" = "Show at most %lld parameter rows";
