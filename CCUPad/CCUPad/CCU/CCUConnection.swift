@@ -166,7 +166,7 @@ final class SimulatedCCU: CCUConnection {
 
         replace("ItemTallyProgram", value: .int(program ? 1 : 0))
         replace("ItemTallyPreview", value: .int(preview ? 1 : 0))
-        replace("ItemAudioMonitorLevel", value: .int(-150 - Int.random(in: 0...450)))
+        replace("ItemAudioMonitorLevel", value: .int(Int64(-150 - Int.random(in: 0...450))))
         onItemsChanged?()
     }
 

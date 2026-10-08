@@ -76,12 +76,19 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---------------------------------------------------------------- 1. 推代码
 console.log('══ 1/4 推代码 ══');
-const pushArgs = [path.join(HERE, 'push-via-api.mjs'), SLUG];
-if (hasFlag('--create')) pushArgs.push('--create');
-const push = spawnSync(process.execPath, pushArgs, { cwd: REPO_DIR, stdio: 'inherit' });
-if (push.status !== 0) {
-  console.error('推送失败，后面的步骤不再继续。');
-  process.exit(push.status ?? 1);
+if (hasFlag('--no-push')) {
+  // 已经用 git push 推过了（github.com 间歇可达时这条路更稳），直接进编译阶段
+  console.log('  --no-push：跳过推送');
+} else {
+  const pushArgs = [path.join(HERE, 'push-via-api.mjs'), SLUG];
+  if (hasFlag('--create')) pushArgs.push('--create');
+  const push = spawnSync(process.execPath, pushArgs, { cwd: REPO_DIR, stdio: 'inherit' });
+  if (push.status !== 0) {
+    console.error('推送失败，后面的步骤不再继续。');
+    console.error('提示：若远端是刚建好的空仓库，Git Data API 会返回 409 —— 这时先用 git push 推一次，');
+    console.error('      再跑 node tools/publish.mjs <owner/repo> --no-push。');
+    process.exit(push.status ?? 1);
+  }
 }
 
 if (hasFlag('--push-only')) {

@@ -124,7 +124,9 @@ try {
   remoteSubjects = commits.map((c) => c.commit.message.split('\n')[0]).reverse();
   remoteHead = commits[0]?.sha ?? null;
 } catch (e) {
-  if (e.status !== 404) throw e;
+  // 新建的空仓库：commits 接口返回 409 "Git Repository is empty"（不是 404）；
+  // 有些情况下（分支不存在）才是 404。两种都当作「远端还是空的」。
+  if (e.status !== 404 && e.status !== 409) throw e;
   console.log('远端分支还是空的');
 }
 
