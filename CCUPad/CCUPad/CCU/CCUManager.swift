@@ -179,6 +179,10 @@ final class CCUManager: ObservableObject {
             if case .failed(let text) = status { state.lastError = text }
             if status == .closed || status.isFailure { state.updatedAt = Date() }
             self.states[device.id] = state
+            // 连上并读完参数后，若这台设备还没绑过任何东西，套用实测确认的 HDCU 默认映射
+            if status == .ready {
+                self.applyVerifiedDefaultsIfEmpty(device.id)
+            }
             self.rebuild(device.id)
             if status == .closed || status.isFailure {
                 self.scheduleReconnect(device.id)
@@ -232,16 +236,8 @@ final class CCUManager: ObservableObject {
         AppStore.saveDevices(devices)
         states[device.id] = CCUDeviceState(id: device.id)
 
-        var map = ParameterMap()
-        map.gainChannels = (1...8).map { index in
-            GainBinding(itemName: "ItemAudioIn\(index)Gain",
-                        title: "IN \(index)",
-                        divisor: 10,
-                        unit: "dB")
-        }
-        map.tallyPgmItem = "ItemTallyProgram"
-        map.tallyPvwItem = "ItemTallyPreview"
-        map.note = "演示机位自带映射（原始值为 0.1 dB，除数 10）"
+        var map = ParameterMap.hdcu3500Default()
+        map.note = "演示机位：参数名与量程照真机（ADJUST 0…255、偏移 128）"
         maps[device.id] = map
         saveMaps()
 
@@ -343,8 +339,8 @@ final class CCUManager: ObservableObject {
         state.gains = map.gainChannels.compactMap { binding -> GainChannel? in
             guard let item = snapshot[binding.itemName] else { return nil }
             let divisor = binding.divisor == 0 ? 1 : binding.divisor
-            // 档位表也要换算成界面值，推子才对得上
-            let enumDisplay = item.numericEnumValues?.map { $0 / divisor }
+            // 档位表同样要换算成界面值（含 offset），推子才对得上
+            let enumDisplay = item.numericEnumValues?.map { ($0 / divisor) - binding.offset }
             return GainChannel(itemName: binding.itemName,
                                title: binding.title.isEmpty ? item.shortName : binding.title,
                                rawValue: item.value.number ?? 0,
@@ -355,7 +351,9 @@ final class CCUManager: ObservableObject {
                                writable: item.isWritable,
                                pending: pending.contains(binding.itemName),
                                problem: failures[binding.itemName],
-                               enumValues: enumDisplay)
+                               enumValues: enumDisplay,
+                               offset: binding.offset,
+                               valueLabels: binding.valueLabels)
         }
 
         state.tally = resolveTally(map: map, snapshot: snapshot)
@@ -510,6 +508,23 @@ final class CCUManager: ObservableObject {
         AppStore.saveMaps(maps)
     }
 
+    /// 连上并读完参数后，若这台设备**还没绑过任何东西**，套用实测确认的 HDCU 默认映射。
+    ///
+    /// 只认参数名确实存在的情况（`ParameterMap.exactDefaults` 会核对），
+    /// 而且只在映射为空时生效 —— 绝不覆盖你手工绑好的。
+    private func applyVerifiedDefaultsIfEmpty(_ id: UUID) {
+        guard maps[id]?.isEmpty ?? true else { return }
+        guard let session = sessions[id] else { return }
+
+        let probe = session.snapshot(for: ["ItemAudioOutCh1Adjust", "ItemTallyRStatus"])
+        guard probe["ItemAudioOutCh1Adjust"] != nil, probe["ItemTallyRStatus"] != nil else { return }
+
+        maps[id] = ParameterMap.hdcu3500Default()
+        saveMaps()
+        appendLog(deviceLabel(id),
+                  "已套用实测默认映射：增益 OUT1/OUT2（ADJUST 0…255，偏移 128）+ 电平标准 2 路 + tally PGM/PVW")
+    }
+
     // MARK: - 增益下发
 
     /// 设置一条通道的增益。`commit == false` 用于拖动过程中的本地预览。
@@ -523,7 +538,8 @@ final class CCUManager: ObservableObject {
                                         enumValues: channel.snapValues)
         let divisor = channel.divisor == 0 ? 1 : channel.divisor
 
-        state.gains[index].rawValue = target * divisor
+        // 界面值 → 设备原始值：先加 offset 再乘除数（HDCU 的 ADJUST 中心 128 对应界面 0）
+        state.gains[index].rawValue = (target + channel.offset) * divisor
         state.gains[index].problem = nil
         state.gains[index].pending = commit && !settings.dryRun
         state.updatedAt = Date()
@@ -541,7 +557,7 @@ final class CCUManager: ObservableObject {
             return
         }
 
-        sessions[id]?.setValue(itemName: channel.itemName, value: CCUItem.target(from: target * divisor))
+        sessions[id]?.setValue(itemName: channel.itemName, value: CCUItem.target(from: (target + channel.offset) * divisor))
     }
 
     func nudgeGain(device id: UUID, channel: GainChannel, delta: Double) {

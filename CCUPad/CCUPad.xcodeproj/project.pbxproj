@@ -363,7 +363,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.2.0;
+    MARKETING_VERSION = 0.3.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;
@@ -393,7 +393,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.2.0;
+    MARKETING_VERSION = 0.3.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;

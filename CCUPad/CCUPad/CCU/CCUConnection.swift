@@ -164,8 +164,8 @@ final class SimulatedCCU: CCUConnection {
         program.toggle()
         if !program { preview.toggle() }
 
-        replace("ItemTallyProgram", value: .int(program ? 1 : 0))
-        replace("ItemTallyPreview", value: .int(preview ? 1 : 0))
+        replace("ItemTallyRStatus", value: .int(program ? 1 : 0))
+        replace("ItemTallyGStatus", value: .int(preview ? 1 : 0))
         replace("ItemAudioMonitorLevel", value: .int(Int64(-150 - Int.random(in: 0...450))))
         onItemsChanged?()
     }
@@ -224,9 +224,17 @@ final class SimulatedCCU: CCUConnection {
             enumValues: [.int(-600), .int(-300), .int(-120), .int(0)])
         add("ItemAudioOut2Gain", id: 1012, min: -200, max: 200, value: .int(-60))
 
-        // tally：PGM / PVW 各一个，另有几个诱饵
-        add("ItemTallyProgram", id: 2001, min: 0, max: 1, value: .int(0))
-        add("ItemTallyPreview", id: 2002, min: 0, max: 1, value: .int(1))
+        // tally + 音频输出增益：**故意用与真机相同的参数名与量程**，
+        // 这样演示机位跑的就是正式那条路径（含 offset 128 的换算），
+        // 等于随包带了一个可以自己验一遍的副本。
+        add("ItemAudioOutCh1Adjust", id: 3001, min: 0, max: 255, value: .int(140))
+        add("ItemAudioOutCh2Adjust", id: 3002, min: 0, max: 255, value: .int(116))
+        add("ItemAudioOutCh1Level", id: 3003, min: nil, max: nil, value: .int(3103001),
+            enumValues: [.int(3103000), .int(3103001), .int(3103002)])
+        add("ItemAudioOutCh2Level", id: 3004, min: nil, max: nil, value: .int(3103001),
+            enumValues: [.int(3103000), .int(3103001), .int(3103002)])
+        add("ItemTallyRStatus", id: 2001, min: 0, max: 1, value: .int(0))
+        add("ItemTallyGStatus", id: 2002, min: 0, max: 1, value: .int(1))
         // 枚举型诱饵：min/max 报的是索引范围，合法值在这个档位表里 ——
         // 正是真机上「不能让推子自由取值」的那种参数
         add("ItemTallyLampMode", id: 2003, min: 0, max: 3, value: .int(0),

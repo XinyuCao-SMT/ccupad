@@ -162,6 +162,8 @@ struct VerticalFaderView: View {
     }
 
     private func text(for value: Double) -> String {
+        // 枚举型通道（例如输出参考电平标准）显示设备的档位文字，而不是 3103001 这种原始值
+        if let label = channel.label(forDisplayValue: value), !label.isEmpty { return label }
         let number = value == value.rounded() ? String(Int(value)) : String(format: "%.1f", value)
         return channel.unit.isEmpty ? number : "\(number) \(channel.unit)"
     }

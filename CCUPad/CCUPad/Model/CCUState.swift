@@ -100,11 +100,25 @@ struct GainChannel: Identifiable, Hashable {
     /// 有值时推子只允许落在这些档位上，量程也以档位表为准。
     var enumValues: [Double]? = nil
 
+    /// 显示值 = 原始值 ÷ 除数 − offset。
+    /// HDCU 的 ADJUST 原始 0…255、中心 128 才对应 OSD 上的 0，所以 offset 填 128。
+    var offset: Double = 0
+
+    /// 枚举型通道的「原始值 → 显示文字」（设备只给数值不给标签）。
+    var valueLabels: [String: String] = [:]
+
     var id: String { itemName }
 
-    var value: Double { divisor == 0 ? rawValue : rawValue / divisor }
-    var minValue: Double { divisor == 0 ? rawMin : rawMin / divisor }
-    var maxValue: Double { divisor == 0 ? rawMax : rawMax / divisor }
+    var value: Double { (divisor == 0 ? rawValue : rawValue / divisor) - offset }
+    var minValue: Double { (divisor == 0 ? rawMin : rawMin / divisor) - offset }
+    var maxValue: Double { (divisor == 0 ? rawMax : rawMax / divisor) - offset }
+
+    /// 把某个「界面值」换算回原始值再查标签（枚举型通道用）。
+    func label(forDisplayValue display: Double) -> String? {
+        guard !valueLabels.isEmpty else { return nil }
+        let scaled = (display + offset) * (divisor == 0 ? 1 : divisor)
+        return valueLabels[String(Int(scaled.rounded()))]
+    }
 
     /// 枚举型参数要吸附的档位；连续型返回 nil。
     var snapValues: [Double]? {
@@ -150,7 +164,8 @@ struct GainChannel: Identifiable, Hashable {
     }
 
     var valueText: String {
-        GainChannel.format(value, unit: unit)
+        if let label = label(forDisplayValue: value), !label.isEmpty { return label }
+        return GainChannel.format(value, unit: unit)
     }
 
     static func format(_ number: Double, unit: String) -> String {
