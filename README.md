@@ -11,8 +11,8 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 当前版本 | **0.7.0**（tag `v0.7.0-logo`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.7.0-logo)） |
-> | 归档产物 | `dist/v0.7.0-logo/CCUPad-v0.7.0-logo-unsigned.ipa`（648 KB，同目录有 SHA256 清单） |
+> | 当前版本 | **0.8.0**（tag `v0.8.0-colorbar`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar)） |
+> | 归档产物 | `dist/v0.8.0-colorbar/CCUPad-v0.8.0-colorbar-unsigned.ipa`（656 KB，同目录有 SHA256 清单） |
 > | 图标 / 开发者 | 索尼 logo（源图 `artwork/sony-logo.jpg`，生成脚本 `tools/make-logo.py`）；开发者 **SMT-Xinyu Cao** |
 > | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
@@ -44,7 +44,7 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 | Tally 可视化 | 每台格子按 tally 上色：**PGM 红框 / PVW 绿框 / 未上播 灰框**；顶部总览条同步变色 |
 | 增益总览 | 一屏一行的横向条形图，把全部机位的电平位置并排放在一起看 |
 | 写入校验 | 每条写值都会等设备回推确认；没确认就自动重试一次，仍失败则标红并写日志（不会假装成功） |
-| 参数发现 | 读出设备全部约 3300 个参数，按名字搜索 / 按归类筛选 / 看实时值，并在这里把参数**绑定**成增益通道或 tally 来源 |
+| 参数发现 | 读出设备全部约 3300 个参数，按名字搜索 / 按归类筛选 / 看实时值，并在这里把参数**绑定**成增益通道 / tally 来源 / 彩条开关 |
 | 参数清单导出 | 把某台设备的全部参数导成 TSV 落到「文件」App，方便存档或回传给开发核对 |
 | 装上即绑好（HDCU） | 连上并读完参数后，若这台设备**还没绑过任何东西**，自动套用**实测确认**的映射（话筒增益 2 路 + tally PGM·PVW），不用去发现页；已绑过的设备可以在参数发现页点「套用实测默认」一键换新 |
 | **锁定其他项目** | 打开后主控台只剩**推子 + tally**，**参数发现 / 设备 / 设置**三页要输管理密码才出现。密码存 Keychain，解锁状态**不持久化**（重启回到锁定）；未设密码时不允许打开锁定 |
@@ -82,6 +82,7 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 | 输出参考电平标准 | `ItemAudioOutCh1Level` / `ItemAudioOutCh2Level` | **3 档枚举**：−20 dBu / 0 dBu / +4 dBu（是标准选择器，不是可推的增益） |
 | **tally 播出（红 / PGM）** | `ItemTallyRStatus` | 0 / 1 |
 | **tally 预览（绿 / PVW）** | `ItemTallyGStatus` | 0 / 1 |
+| **彩条开关** | `ItemCameraIfColorBar` | 0 / 1（**1 = 出彩条，0 = 出画面**；另有 `TemporaryColorBar` 瞬时、`StartupBarState` 上电状态，别绑错） |
 
 **⚠️ 一个容易踩的协议行为：设备下发的 `enum` 是「此刻可选」的候选，不是完整枚举域。**
 同一台设备的 `ItemMicGainCh1`：摄像机接上时档位表是 5 档 [20/30/40/50/60 dB]、当前值 `3001002`（=30 dB）；

@@ -19,7 +19,8 @@
 
 | 版本 | 提交 | Tag | 内容 | IPA |
 | --- | --- | --- | --- | --- |
-| **v0.7.0 图标版**<br>（当前，推荐装） | 本地 `9bb4253`<br>远端 `b7d2a94` | `v0.7.0-logo` | **App 图标换成索尼 logo**（+ 关于页 logo）；关于页显示**版本号（从包里读）+ 开发者 SMT-Xinyu Cao**；新增资源检查与 5 项包结构校验（图标 PNG / Assets.car / .lproj） | `dist/v0.7.0-logo/CCUPad-v0.7.0-logo-unsigned.ipa`（648 KB） |
+| **v0.8.0 彩条版**<br>（当前，推荐装） | 本地 `49ebf6b`<br>远端 `7e2a427` | `v0.8.0-colorbar` | **彩条开关**：`ItemCameraIfColorBar`（1=彩条 0=画面），主控台每台格子底部一个「彩条 开/关」按钮；照抄 ccu-studio 的**2 秒冷却**（设备约 1 秒才生效、连点会乱）；参数发现页可手工绑定/解绑；中英文案齐全 | `dist/v0.8.0-colorbar/CCUPad-v0.8.0-colorbar-unsigned.ipa`（656 KB） |
+| v0.7.0 图标版 | 本地 `9bb4253`<br>远端 `b7d2a94` | `v0.7.0-logo` | **App 图标换成索尼 logo**（+ 关于页 logo）；关于页显示**版本号（从包里读）+ 开发者 SMT-Xinyu Cao**；新增资源检查与 5 项包结构校验（图标 PNG / Assets.car / .lproj） | `dist/v0.7.0-logo/CCUPad-v0.7.0-logo-unsigned.ipa`（648 KB） |
 | v0.6.0 英文界面版 | 本地 `1a99274`<br>远端 `7344afd` | `v0.6.0-english` | **中文/英文两套界面**（标准本地化 en + zh-Hans，各 214 条；iPad 设置里可按 App 切语言）；推子待确认时显示黄色 +「正在调整，请稍等」 | `dist/v0.6.0-english/CCUPad-v0.6.0-english-unsigned.ipa`（503 KB） |
 | v0.5.0 操作员界面版 | 本地 `b61bd08`<br>远端 `db6cd2f` | `v0.5.0-lock` | 去掉 ADJUST，增益只用推子（默认只绑话筒增益 2 路）；枚举参数吸附档位；**「锁定其他项目」需要管理密码** —— 只留主控台 | `dist/v0.5.0-lock/CCUPad-v0.5.0-lock-unsigned.ipa`（489 KB） |
 | v0.4.0 话筒增益版 | 本地 `d85ec66`<br>远端 `64a434d` | `v0.4.0-micgain` | 话筒增益（MIC GAIN，5 档）纳入默认映射；**修掉写入安全隐患**（档位表只有一档且无量程时判为不可写） | `dist/v0.4.0-micgain/CCUPad-v0.4.0-micgain-unsigned.ipa`（479 KB） |
@@ -63,6 +64,7 @@ API 重放会**新建提交对象**，所以远端提交的 SHA 与本地**不�
 1. 用 **Sideloadly** 装想要的版本，例如
    `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`
 2. 或从 GitHub Release 下载（**永久有效**，不受工件 30 天限制）：
+   * v0.8.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar>
    * v0.7.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.7.0-logo>
    * v0.6.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.6.0-english>
    * v0.5.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.5.0-lock>
@@ -114,6 +116,7 @@ E:\harness\_backup\build-records.txt                          ← 各版本：�
 
 | 文件 | 大小 | SHA256（前 16 位，完整值见 `MANIFEST.txt`） |
 | --- | --- | --- |
+| `CCUPad-v0.8.0-colorbar-unsigned.ipa` | 656 KB | `9EB0BD6BE9692447…` |
 | `CCUPad-v0.7.0-logo-unsigned.ipa` | 648 KB | `183CDADD37F227A6…` |
 | `CCUPad-v0.6.0-english-unsigned.ipa` | 503 KB | `41A96FA6A7E3D6B5…` |
 | `CCUPad-v0.5.0-lock-unsigned.ipa` | 489 KB | `26B5A03D3030A7E6…` |
@@ -122,7 +125,7 @@ E:\harness\_backup\build-records.txt                          ← 各版本：�
 | `CCUPad-v0.2.0-gain-tally-unsigned.ipa` | 461 KB | `3C7B699C8518E8EE…` |
 
 ```powershell
-Get-FileHash .\dist\v0.7.0-logo\CCUPad-v0.7.0-logo-unsigned.ipa -Algorithm SHA256
+Get-FileHash .\dist\v0.8.0-colorbar\CCUPad-v0.8.0-colorbar-unsigned.ipa -Algorithm SHA256
 ```
 
 `MANIFEST.txt` 里还有逐项的 IPA 结构校验结果（arm64 / `CFBundleShortVersionString` = 对应版本 /
@@ -141,10 +144,12 @@ Get-FileHash .\dist\v0.7.0-logo\CCUPad-v0.7.0-logo-unsigned.ipa -Algorithm SHA25
 | v0.4.0-micgain | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37740485578> |
 | v0.5.0-lock | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37741292964> |
 | v0.6.0-english | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37746995936> |
-| **v0.7.0-logo** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37761471390> |
+| v0.7.0-logo | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37761471390> |
+| **v0.8.0-colorbar** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39558450999> |
 
 各版本的 IPA 都已挂到对应 Release 的附件里，**永久可下载**：
 
+* v0.8.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar>
 * v0.7.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.7.0-logo>
 * v0.6.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.6.0-english>
 * v0.5.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.5.0-lock>
