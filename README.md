@@ -11,8 +11,8 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 当前版本 | **0.9.0**（tag `v0.9.0-barText`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.9.0-barText)） |
-> | 归档产物 | `dist/v0.9.0-barText/CCUPad-v0.9.0-barText-unsigned.ipa`（662 KB，同目录有 SHA256 清单） |
+> | 当前版本 | **0.10.0**（tag `v0.10.0-interface`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.10.0-interface)） |
+> | 归档产物 | `dist/v0.10.0-interface/CCUPad-v0.10.0-interface-unsigned.ipa`（677 KB，同目录有 SHA256 清单） |
 > | 图标 / 开发者 | 索尼 logo（源图 `artwork/sony-logo.jpg`，生成脚本 `tools/make-logo.py`）；开发者 **SMT-Xinyu Cao** |
 > | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
@@ -55,6 +55,25 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 **台数没有上限**：IP 规格（`10.205.1.101-108`、`10.205.1.1-200`、逗号混写）会全量展开，
 一屏几十台照常显示（网格是懒加载）。「连接全部」是**错峰发起**（每台间隔 200 ms）——
 几十台同时连会瞬间打满网络，每台都要走一次认证再把 3331 个参数吐回来。
+
+## 网络接口（Wi-Fi / 有线）
+
+iPad 有时用 Wi-Fi、有时插 USB-C 网卡走有线。**设置 → 连接 → 走哪个网卡**：
+
+| 选项 | 行为 |
+| --- | --- |
+| 自动（系统决定） | 按 iOS 的路由表走（默认） |
+| 仅 Wi-Fi | 所有连接强制走 Wi-Fi |
+| 仅有线以太网 | 所有连接强制走 USB-C 网卡 |
+
+* 指定之后，**拿 Digest 挑战的请求与控制通道（WebSocket）走同一张网卡**——
+  否则 iPad 同时连着两张网时会出现「认证走一张、控制通道走另一张」。
+* 指定的网卡不存在时连接**直接失败**，不会偷偷改走另一张
+  （宁可连不上，也不要走错网段还显示「已连接」）。设置页显示「当前可用：…」并会提示。
+* 换网卡只影响**新建**的连接；已经连着的不动。
+* 实现上是 Network.framework 的 `NWParameters.requiredInterfaceType`
+  （iOS 不给 socket 绑网卡名；碰巧本工程的 HTTP 与控制通道都是自己用 `NWConnection` 建的，
+  不用 `URLSession`，所以做得到）。
 
 **版本号与开发者在「设置 → 关于」**：那里显示 logo、版本号（**从 App 包里读**，
 不在代码里硬编码）、构建号和开发者 SMT-Xinyu Cao。
@@ -312,6 +331,9 @@ HTTP 客户端同理是手写的（只用来取挑战）。
   需要按现场手册或 OSD 实际显示来定。
 * **设备下发的档位表随状态变化**（同 0.4.0 那条）：摄像机没接上时话筒增益只剩 `Null` 一档，
   App 会把这类通道判为不可写而不是硬推。若你看到某路灰着，先看设备那边这个参数当前是否可选。
+* **网络接口只区分「Wi-Fi / 有线」两类**，不能指定某一块具体的网卡
+  （例如两块 USB-C 网卡之间没法区分）—— iOS 的 `NWInterface.InterfaceType` 只有类型粒度，
+  没有网卡名可选。两台 CCU 分别挂在两张同类型网卡上时，只能靠系统路由。
 * 只处理**参数层**：不做固件升级、不恢复出厂、不改登录密码、不碰网络与 IP Live 配置。
 * **演示机位为了跑得快只生成约 620 个参数**（真机 3331），但**关键那几项用的是真机同名参数与量程**
   （`ItemAudioOutCh1/2Adjust` 0…255 偏移 128、`ItemTallyR/GStatus`），所以演示跑的就是正式那条路径。
