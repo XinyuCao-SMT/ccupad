@@ -170,7 +170,11 @@ final class CCUManager: ObservableObject {
         if isSimulated {
             session = SimulatedCCU(device: device)
         } else {
-            session = CCUSession(device: device, password: secret)
+            session = CCUSession(device: device, password: secret, interface: settings.interfaceChoice)
+        }
+
+        if !isSimulated, settings.interfaceChoice != .automatic {
+            appendLog(device.label, "网卡：\(settings.interfaceChoice.title)（这条链路不存在时会直接连不上，不会改走另一张）")
         }
 
         session.onLog = { [weak self] text in
@@ -294,7 +298,8 @@ final class CCUManager: ObservableObject {
                         password: String,
                         completion: @escaping (String) -> Void) {
         let safePort = UInt16(clamping: port)
-        HTTPClient.get(host: host, port: safePort, path: "/", timeout: 8) { result in
+        HTTPClient.get(host: host, port: safePort, path: "/", timeout: 8,
+                       interface: settings.interfaceChoice) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .failure(let error):
@@ -313,7 +318,8 @@ final class CCUManager: ObservableObject {
                                    port: safePort,
                                    path: "/",
                                    headers: ["Authorization": auth],
-                                   timeout: 8) { second in
+                                   timeout: 8,
+                                   interface: settings.interfaceChoice) { second in
                         DispatchQueue.main.async {
                             switch second {
                             case .failure(let error):

@@ -29,6 +29,9 @@ struct AppSettings: Codable, Equatable {
     /// 参数发现页默认只显示前多少行（3300 项一次画完会卡）。
     var discoveryRowLimit: Int = 300
 
+    /// 走哪个网卡：现场有时用 Wi-Fi、有时用有线（USB-C 网卡）。
+    var interfaceChoice: NetworkInterfaceChoice = .automatic
+
     /// 日志保留条数。
     var logLimit: Int = 300
 
@@ -36,4 +39,30 @@ struct AppSettings: Codable, Equatable {
     /// 参数发现 / 设备 / 设置三个页都要输入管理密码才能看到。
     /// 只有在**已设置管理密码**时才允许打开（密码存在 Keychain，不在设置文件里）。
     var lockAdmin: Bool = false
+
+    init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case dryRun, liveWhileDragging, gainStep, confirmBulkWrite, autoReconnect
+        case reconnectInterval, discoveryRowLimit, interfaceChoice, logLimit, lockAdmin
+    }
+
+    /// **手写解码：缺字段一律取默认值。**
+    ///
+    /// 合成 Codable 对缺失的非可选字段会直接抛错 —— 那会让旧版本存下来的设置
+    /// 整份读不出来，升级后「试运行」等开关全部回到默认（用户的设置悄悄丢了）。
+    /// 新增字段时**同时**在这里加一行。
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        dryRun = try container.decodeIfPresent(Bool.self, forKey: .dryRun) ?? true
+        liveWhileDragging = try container.decodeIfPresent(Bool.self, forKey: .liveWhileDragging) ?? false
+        gainStep = try container.decodeIfPresent(Double.self, forKey: .gainStep) ?? 0.5
+        confirmBulkWrite = try container.decodeIfPresent(Bool.self, forKey: .confirmBulkWrite) ?? true
+        autoReconnect = try container.decodeIfPresent(Bool.self, forKey: .autoReconnect) ?? true
+        reconnectInterval = try container.decodeIfPresent(Double.self, forKey: .reconnectInterval) ?? 5
+        discoveryRowLimit = try container.decodeIfPresent(Int.self, forKey: .discoveryRowLimit) ?? 300
+        interfaceChoice = try container.decodeIfPresent(NetworkInterfaceChoice.self, forKey: .interfaceChoice) ?? .automatic
+        logLimit = try container.decodeIfPresent(Int.self, forKey: .logLimit) ?? 300
+        lockAdmin = try container.decodeIfPresent(Bool.self, forKey: .lockAdmin) ?? false
+    }
 }

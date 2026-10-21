@@ -28,6 +28,8 @@ final class WebSocketClient {
     let host: String
     let port: UInt16
     let path: String
+    /// 走哪个网卡（Wi-Fi / 有线 / 自动）。控制通道与拿挑战的 HTTP 请求必须一致。
+    private let interface: NetworkInterfaceChoice
 
     private let queue = DispatchQueue(label: "ccupad.websocket")
     private var connection: NWConnection? = nil
@@ -46,10 +48,12 @@ final class WebSocketClient {
     var onError: ((String) -> Void)? = nil
     var onClose: (() -> Void)? = nil
 
-    init(host: String, port: UInt16 = 80, path: String = "/linear") {
+    init(host: String, port: UInt16 = 80, path: String = "/linear",
+         interface: NetworkInterfaceChoice = .automatic) {
         self.host = host
         self.port = port
         self.path = path
+        self.interface = interface
     }
 
     var isOpen: Bool { handshakeComplete && !closed }
@@ -74,7 +78,7 @@ final class WebSocketClient {
 
         let connection = NWConnection(host: NWEndpoint.Host(host),
                                      port: endpointPort,
-                                     using: .tcp)
+                                     using: NetworkInterface.parameters(for: interface))
         self.connection = connection
 
         let watchdog = DispatchWorkItem { [weak self] in

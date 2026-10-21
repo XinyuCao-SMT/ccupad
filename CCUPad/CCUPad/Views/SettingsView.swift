@@ -8,6 +8,9 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var manager: CCUManager
 
+    /// 当前有哪些网卡（Wi-Fi / 有线）—— 用来提示「你选的那张网卡现在没连」。
+    @ObservedObject private var interfaces = NetworkInterfaceMonitor.shared
+
     var body: some View {
         NavigationStack {
             Form {
@@ -60,6 +63,26 @@ struct SettingsView: View {
                     value: intBinding(\.discoveryRowLimit),
                     in: 50...2000,
                     step: 50)
+
+            Picker("走哪个网卡", selection: choiceBinding(\.interfaceChoice)) {
+                ForEach(NetworkInterfaceChoice.allCases) { choice in
+                    Text(choice.title).tag(choice)
+                }
+            }
+
+            Text(L10n.f("当前可用：%@", interfaces.summary))
+                .font(.caption2)
+                .foregroundStyle(Color.secondary)
+
+            if let needed = manager.settings.interfaceChoice.requiredType, !interfaces.has(needed) {
+                Text("所选网卡现在没有连接 —— 连接会直接失败，不会偷偷改走另一张网卡。")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.warning)
+            }
+
+            Text("「有线」在 iPad 上就是 USB-C 网卡。指定之后，拿 Digest 挑战的请求与控制通道都走同一张网卡。")
+                .font(.caption2)
+                .foregroundStyle(Color.secondary)
         }
     }
 
@@ -263,6 +286,20 @@ struct SettingsView: View {
             set: { newValue in
                 manager.settings[keyPath: keyPath] = newValue
                 manager.saveSettings()
+            }
+        )
+    }
+
+    /// 枚举型设置（网卡选择）的绑定。
+    private func choiceBinding(_ keyPath: WritableKeyPath<AppSettings, NetworkInterfaceChoice>)
+        -> Binding<NetworkInterfaceChoice> {
+        Binding(
+            get: { manager.settings[keyPath: keyPath] },
+            set: { newValue in
+                manager.settings[keyPath: keyPath] = newValue
+                manager.saveSettings()
+                // 换网卡只影响**新建**的连接，已在连的保持原样 —— 说清楚，免得以为没生效
+                manager.appendLog("设置", "网卡已切到「\(newValue.title)」，下次连接生效")
             }
         )
     }

@@ -41,6 +41,7 @@ enum HTTPClient {
                     path: String = "/",
                     headers extraHeaders: [String: String] = [:],
                     timeout: TimeInterval = 8,
+                    interface: NetworkInterfaceChoice = .automatic,
                     completion: @escaping (Result<HTTPResponse, Error>) -> Void) {
 
         // 端口先转成 Network.framework 的类型：不合法的端口直接失败，
@@ -53,7 +54,7 @@ enum HTTPClient {
         let queue = DispatchQueue(label: "ccupad.http")
         let connection = NWConnection(host: NWEndpoint.Host(host),
                                      port: endpointPort,
-                                     using: .tcp)
+                                     using: NetworkInterface.parameters(for: interface))
 
         var buffer = Data()
         var finished = false

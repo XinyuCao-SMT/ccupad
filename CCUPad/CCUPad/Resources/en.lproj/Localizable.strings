@@ -150,6 +150,20 @@
 "已保存管理密码" = "Admin password saved";
 "保存失败（Keychain 写入被拒绝）" = "Save failed (Keychain refused the write)";
 
+/* ── 网络接口（Wi-Fi / 有线） ── */
+"走哪个网卡" = "Network interface";
+"自动（系统决定）" = "Automatic (system)";
+"仅 Wi-Fi" = "Wi-Fi only";
+"仅有线以太网" = "Wired Ethernet only";
+"当前可用：%@" = "Available now: %@";
+"没有可用网卡" = "no interface available";
+"有线以太网" = "Wired Ethernet";
+"蜂窝" = "Cellular";
+"本机回环" = "Loopback";
+"、" = ", ";
+"所选网卡现在没有连接 —— 连接会直接失败，不会偷偷改走另一张网卡。" = "The selected interface is not connected — connections will fail instead of silently falling back to the other one.";
+"「有线」在 iPad 上就是 USB-C 网卡。指定之后，拿 Digest 挑战的请求与控制通道都走同一张网卡。" = "On iPad, \"wired\" means a USB-C adapter. Once selected, both the Digest challenge request and the control channel use that same interface.";
+
 /* ── 彩条开关 ── */
 "彩条 开" = "Bars ON";
 "彩条 关" = "Bars OFF";

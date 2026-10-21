@@ -20,6 +20,9 @@ final class CCUSession: CCUConnection {
 
     let device: CCUDevice
     private let password: String
+    /// 走哪个网卡。拿 Digest 挑战的 HTTP 请求与控制通道必须用同一张网卡，
+    /// 否则 iPad 同时连着 Wi-Fi 和有线时会「挑战走一张、控制通道走另一张」。
+    private let interface: NetworkInterfaceChoice
     private let ws: WebSocketClient
     private let queue = DispatchQueue(label: "ccupad.session")
 
@@ -57,12 +60,14 @@ final class CCUSession: CCUConnection {
         "ItemNetworkIpAddress",
     ]
 
-    init(device: CCUDevice, password: String) {
+    init(device: CCUDevice, password: String, interface: NetworkInterfaceChoice = .automatic) {
         self.device = device
         self.password = password
+        self.interface = interface
         self.ws = WebSocketClient(host: device.host,
                                   port: UInt16(clamping: device.port),
-                                  path: "/linear")
+                                  path: "/linear",
+                                  interface: interface)
         wireSocket()
     }
 
@@ -113,7 +118,8 @@ final class CCUSession: CCUConnection {
         HTTPClient.get(host: device.host,
                        port: UInt16(clamping: device.port),
                        path: "/",
-                       timeout: 8) { [weak self] result in
+                       timeout: 8,
+                       interface: interface) { [weak self] result in
             guard let self = self else { return }
             self.queue.async {
                 switch result {
