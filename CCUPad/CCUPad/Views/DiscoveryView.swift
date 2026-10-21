@@ -209,6 +209,7 @@ struct DiscoveryView: View {
         let boundGain = map.hasGain(item.name)
         let boundTally = map.hasTally(item.name)
         let boundColorBar = map.hasColorBar(item.name)
+        let boundBarText = map.hasBarText(item.name)
         let role = ItemClassifier.role(of: item.name)
 
         return HStack(alignment: .top, spacing: 10) {
@@ -227,6 +228,7 @@ struct DiscoveryView: View {
                     if boundGain { Text("已绑增益").foregroundStyle(Theme.gainFill) }
                     if boundTally { Text("已绑 tally").foregroundStyle(Theme.preview) }
                     if boundColorBar { Text("已绑彩条").foregroundStyle(Theme.warning) }
+                    if boundBarText { Text("已绑彩条字符").foregroundStyle(Theme.preview) }
                 }
                 .font(.caption2)
                 .foregroundStyle(Color.secondary)
@@ -255,7 +257,8 @@ struct DiscoveryView: View {
                 Button("设为 Tally PGM") { bindTally(item, .program) }
                 Button("设为 Tally PVW") { bindTally(item, .preview) }
                 Button("设为彩条开关") { bindColorBar(item) }
-                if boundGain || boundTally || boundColorBar {
+                Button("设为彩条字符（显示在编号后）…") { bindBarText(item) }
+                if boundGain || boundTally || boundColorBar || boundBarText {
                     Divider()
                     if boundGain {
                         Button("解除增益绑定", role: .destructive) { unbindGain(item) }
@@ -265,6 +268,9 @@ struct DiscoveryView: View {
                     }
                     if boundColorBar {
                         Button("解除彩条绑定", role: .destructive) { unbindColorBar(item) }
+                    }
+                    if boundBarText {
+                        Button("解除彩条字符绑定", role: .destructive) { unbindBarText(item) }
                     }
                 }
             } label: {
@@ -316,6 +322,17 @@ struct DiscoveryView: View {
     private func unbindColorBar(_ item: CCUItem) {
         guard let id = activeDevice else { return }
         manager.unbindColorBar(id)
+    }
+
+    private func bindBarText(_ item: CCUItem) {
+        guard let id = activeDevice else { return }
+        manager.bindBarText(id, itemName: item.name)
+        message = L10n.f("已把 %@ 绑为彩条字符：App 只读它（不写），显示在主控台 CCU 编号后面。", item.name)
+    }
+
+    private func unbindBarText(_ item: CCUItem) {
+        guard let id = activeDevice else { return }
+        manager.unbindBarText(id)
     }
 
     private func exportInventory() {

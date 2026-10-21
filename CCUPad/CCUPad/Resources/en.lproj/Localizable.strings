@@ -161,6 +161,13 @@
 "已把 %@ 绑为彩条开关（1 = 出彩条，0 = 出画面）。主控台的格子上会出现「彩条 开/关」按钮。" = "Bound %@ as the color bar switch (1 = bars, 0 = picture). A Bars ON/OFF button appears on the Dashboard tile.";
 "HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW；彩条 = CameraIfColorBar）" = "HDCU3500 verified defaults (mic gain, 5 positions; R=PGM, G=PVW; bars = CameraIfColorBar)";
 
+/* ── 彩条字符（显示在 CCU 编号后） ── */
+"已绑彩条字符" = "bound as bars text";
+"设为彩条字符（显示在编号后）…" = "Bind as Bars Text (shown after number)…";
+"解除彩条字符绑定" = "Unbind Bars Text";
+"已把 %@ 绑为彩条字符：App 只读它（不写），显示在主控台 CCU 编号后面。" = "Bound %@ as bars text: the app only reads it (never writes) and shows it after the CCU number on the Dashboard.";
+"彩条字符 ← %@" = "bars text ← %@";
+
 /* ── 关于页 ── */
 "开发者：%@" = "Developer: %@";
 "构建 %@" = "Build %@";

@@ -204,6 +204,9 @@ struct CCUDeviceState: Identifiable {
     /// 上一次切换彩条的时间。设备约 1 秒才生效，**连点会把状态搞乱**，所以每台要冷却。
     var colorBarChangedAt: Date? = nil
 
+    /// 彩条上那一行文字（现场常写机位号）—— 显示在 CCU 编号后面。空字符串就什么都不显示。
+    var barText: String = ""
+
     /// 冷却还剩多少秒（0 表示现在可以切）。
     func colorBarCooldownLeft(now: Date = Date()) -> TimeInterval {
         guard let last = colorBarChangedAt else { return 0 }

@@ -65,7 +65,13 @@ enum DeviceSpecParser {
             seen.insert(host)
             unique.append(host)
         }
-        return unique.sorted { lastOctet($0) < lastOctet($1) }
+        // 按整个 IP 排序：只比末段的话，跨网段（10.205.1.x 与 10.205.2.x）会乱序
+        return unique.sorted { sortKey($0) < sortKey($1) }
+    }
+
+    /// 把 IP 变成可比较的字符串：每段补零到三位，于是字典序就是数值序。
+    static func sortKey(_ text: String) -> String {
+        text.split(separator: ".").map { String(format: "%03d", Int($0) ?? 0) }.joined(separator: ".")
     }
 
     static func isIPv4(_ text: String) -> Bool {

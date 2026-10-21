@@ -246,6 +246,10 @@ final class SimulatedCCU: CCUConnection {
 
         add("ItemTallyRStatus", id: 2001, min: 0, max: 1, value: .int(0))
         add("ItemTallyGStatus", id: 2002, min: 0, max: 1, value: .int(1))
+
+        // 彩条上那一行文字：现场常把机位号写在这里，App 读它显示在编号后面
+        add("ItemBarCharacterText1", id: 2100, min: nil, max: nil, value: .string("CCUPAD DEMO"))
+        add("ItemBarCharacterText2", id: 2101, min: nil, max: nil, value: .string("DEMO-A"))
         // 枚举型诱饵：min/max 报的是索引范围，合法值在这个档位表里 ——
         // 正是真机上「不能让推子自由取值」的那种参数
         add("ItemTallyLampMode", id: 2003, min: 0, max: 3, value: .int(0),

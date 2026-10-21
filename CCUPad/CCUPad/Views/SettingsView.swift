@@ -112,6 +112,9 @@ struct SettingsView: View {
         } else {
             parts.append(L10n.t("彩条未绑定"))
         }
+        if let text = map.barTextItem {
+            parts.append(L10n.f("彩条字符 ← %@", text))
+        }
         if !map.note.isEmpty { parts.append(map.note) }
         return parts.joined(separator: " · ")
     }

@@ -98,6 +98,13 @@ struct ParameterMap: Codable, Hashable {
     /// 可选字段：合成 Codable 对 Optional 走 `decodeIfPresent`，所以旧存档照样读得出来。
     var colorBarItem: String? = nil
 
+    /// 彩条上的**文字行**读哪个参数。
+    ///
+    /// HDCU 有 16 行 `ItemBarCharacterText1…16`（可写字符串，最长 34 字符），
+    /// 现场常把**机位号**写在其中一行。App 只**读**它，显示在 CCU 编号后面。
+    /// 默认第 2 行（实测那场里 Text2 = `CAM31`、Text1 = 活动名）；换行到「参数发现」页重绑即可。
+    var barTextItem: String? = nil
+
     /// 数值 >= 阈值 视为点亮。0/1 型参数填 0.5 就行。
     var tallyThreshold: Double = 0.5
 
@@ -108,7 +115,8 @@ struct ParameterMap: Codable, Hashable {
     var note: String = ""
 
     var isEmpty: Bool {
-        gainChannels.isEmpty && tallyPgmItem == nil && tallyPvwItem == nil && colorBarItem == nil
+        gainChannels.isEmpty && tallyPgmItem == nil && tallyPvwItem == nil
+            && colorBarItem == nil && barTextItem == nil
     }
 
     var tallyBound: Bool {
@@ -125,6 +133,10 @@ struct ParameterMap: Codable, Hashable {
 
     func hasColorBar(_ itemName: String) -> Bool {
         itemName == colorBarItem
+    }
+
+    func hasBarText(_ itemName: String) -> Bool {
+        itemName == barTextItem
     }
 
     /// **实测确认的 HDCU3500 / 3100 默认映射**（2026-10 在 10 台真机上验证）。
@@ -162,6 +174,7 @@ struct ParameterMap: Codable, Hashable {
         map.tallyPgmItem = "ItemTallyRStatus"
         map.tallyPvwItem = "ItemTallyGStatus"
         map.colorBarItem = "ItemCameraIfColorBar"
+        map.barTextItem = "ItemBarCharacterText2"
         map.note = L10n.t("HDCU3500 实测默认（话筒增益 5 档；R=PGM、G=PVW；彩条 = CameraIfColorBar）")
         return map
     }

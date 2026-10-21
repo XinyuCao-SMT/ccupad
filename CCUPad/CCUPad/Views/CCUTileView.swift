@@ -36,9 +36,23 @@ struct CCUTileView: View {
             TallyLampView(tally: state.tally)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(device.label)
-                    .font(.headline)
-                    .lineLimit(1)
+                HStack(spacing: 6) {
+                    Text(device.label)
+                        .font(.headline)
+                        .lineLimit(1)
+
+                    // 彩条上那一行文字（现场常写机位号）—— 紧跟编号显示，几十台时一眼对得上
+                    if !state.barText.isEmpty {
+                        Text(state.barText)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1)
+                            .background(Capsule().fill(Color.white.opacity(0.14)))
+                    }
+                }
+
                 Text(subtitle)
                     .font(.caption2)
                     .foregroundStyle(Color.secondary)

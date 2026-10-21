@@ -217,9 +217,26 @@ final class CCUManager: ObservableObject {
         states[id] = state
     }
 
+    /// 连接全部 —— **错峰发起**。
+    ///
+    /// 几十台一起连会瞬间打满网络：每台都要走一次 Digest 挑战、升级控制通道，
+    /// 然后吐回 3331 个参数。所以第一台立刻连，其余按 200 ms 间隔依次发起；
+    /// 界面会马上显示「连接中」，不必等前一台读完。
     func connectAll() {
-        for device in devices where device.enabled {
-            connect(device)
+        let targets = devices.filter { $0.enabled }
+        guard let first = targets.first else { return }
+
+        connect(first)
+
+        for (index, device) in targets.enumerated() where index > 0 {
+            let id = device.id
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(index * 200)) { [weak self] in
+                guard let self = self,
+                      let latest = self.device(id),
+                      latest.enabled,
+                      !self.state(id).status.isConnected else { return }
+                self.connect(latest)
+            }
         }
     }
 
@@ -373,6 +390,13 @@ final class CCUManager: ObservableObject {
         } else {
             state.colorBarOn = nil
             state.colorBarWritable = false
+        }
+
+        // 彩条上那一行文字（只读）：显示在 CCU 编号后面，方便一眼对上是哪台机。
+        if let name = map.barTextItem, let item = snapshot[name] {
+            state.barText = text(item).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            state.barText = ""
         }
 
         state.updatedAt = Date()
@@ -734,6 +758,25 @@ final class CCUManager: ObservableObject {
         saveMaps()
         rebuild(id)
         appendLog(deviceLabel(id), "已解除彩条开关绑定")
+    }
+
+    /// 把某个参数绑成「彩条上那一行文字」（只读显示）。
+    func bindBarText(_ id: UUID, itemName: String) {
+        guard var map = maps[id] else { return }
+        map.barTextItem = itemName
+        maps[id] = map
+        saveMaps()
+        rebuild(id)
+        appendLog(deviceLabel(id), "已把 \(itemName) 绑为彩条字符（只读，显示在编号后面）")
+    }
+
+    func unbindBarText(_ id: UUID) {
+        guard var map = maps[id] else { return }
+        map.barTextItem = nil
+        maps[id] = map
+        saveMaps()
+        rebuild(id)
+        appendLog(deviceLabel(id), "已解除彩条字符绑定")
     }
 
     // MARK: - 增益快照与回滚
