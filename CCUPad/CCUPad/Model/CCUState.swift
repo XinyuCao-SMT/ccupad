@@ -196,6 +196,19 @@ struct CCUDeviceState: Identifiable {
     var firmware: String = ""
     var gains: [GainChannel] = []
     var tally: TallyState = .unknown
+
+    /// 彩条开关状态（true = 出彩条）。读不到就是 nil —— 界面上就不显示这个按钮。
+    var colorBarOn: Bool? = nil
+    /// 这个彩条参数当前可不可写（设备不接受时置灰）。
+    var colorBarWritable: Bool = false
+    /// 上一次切换彩条的时间。设备约 1 秒才生效，**连点会把状态搞乱**，所以每台要冷却。
+    var colorBarChangedAt: Date? = nil
+
+    /// 冷却还剩多少秒（0 表示现在可以切）。
+    func colorBarCooldownLeft(now: Date = Date()) -> TimeInterval {
+        guard let last = colorBarChangedAt else { return 0 }
+        return max(0, CCUManager.colorBarCooldown - now.timeIntervalSince(last))
+    }
     var lastError: String? = nil
     var updatedAt: Date? = nil
 

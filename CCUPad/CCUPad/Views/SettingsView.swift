@@ -107,6 +107,11 @@ struct SettingsView: View {
             if map.tallyInverted { thresholdText += L10n.t("（取反）") }
             parts.append(thresholdText)
         }
+        if let bar = map.colorBarItem {
+            parts.append(L10n.f("彩条 ← %@", bar))
+        } else {
+            parts.append(L10n.t("彩条未绑定"))
+        }
         if !map.note.isEmpty { parts.append(map.note) }
         return parts.joined(separator: " · ")
     }

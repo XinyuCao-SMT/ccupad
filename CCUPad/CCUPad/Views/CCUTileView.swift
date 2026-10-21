@@ -140,6 +140,21 @@ struct CCUTileView: View {
 
             Spacer(minLength: 4)
 
+            // 彩条开关：现场对机位时用来确认这台机的画面。
+            // 读不到这个参数就不显示（非 HDCU 或没绑定）。
+            if let on = state.colorBarOn {
+                Button {
+                    manager.toggleColorBar(device: device.id)
+                } label: {
+                    Text(L10n.t(on ? "彩条 开" : "彩条 关"))
+                        .font(.caption2)
+                }
+                .buttonStyle(.bordered)
+                .tint(on ? Theme.warning : Color.secondary)
+                .controlSize(.small)
+                .disabled(!state.status.isConnected || !state.colorBarWritable)
+            }
+
             Text(state.tally.source)
                 .font(.caption2)
                 .foregroundStyle(Color.secondary.opacity(0.7))

@@ -364,6 +364,17 @@ final class CCUManager: ObservableObject {
         }
 
         state.tally = resolveTally(map: map, snapshot: snapshot)
+
+        // 彩条开关：只读显示 + 能不能写。
+        // 注意**不要**在这里动 colorBarChangedAt —— 冷却要靠它，每次 rebuild 都重置就等于没有冷却。
+        if let name = map.colorBarItem, let item = snapshot[name] {
+            state.colorBarOn = item.value.number.map { $0 != 0 }
+            state.colorBarWritable = item.isWritable
+        } else {
+            state.colorBarOn = nil
+            state.colorBarWritable = false
+        }
+
         state.updatedAt = Date()
         states[id] = state
     }
@@ -648,6 +659,81 @@ final class CCUManager: ObservableObject {
             setGain(device: id, channel: channel, displayValue: channel.value + delta, commit: true)
         }
         appendLog(deviceLabel(id), "全部通道 \(delta >= 0 ? "+" : "")\(GainChannel.format(delta, unit: "dB"))")
+    }
+
+    // MARK: - 彩条开关
+    //
+    // 参数：`ItemCameraIfColorBar`（**1 = 出彩条，0 = 出画面**）。
+    // 同一台机器上还有 `ItemCameraIfTemporaryColorBar`（瞬时的）与
+    // `ItemCameraIfStartupBarState`（上电时状态），别绑错。
+    //
+    // 两个必须照抄 ccu-studio 的细节：
+    //   · 设备**约 1 秒**才生效，不是立刻；
+    //   · **连点会把状态搞乱**（多次写叠在设备还没处理完的时候），所以每台冷却 2 秒。
+
+    /// 同一台设备两次切彩条之间的最小间隔。
+    static let colorBarCooldown: TimeInterval = 2.0
+
+    /// 切彩条。`on == true` 出彩条，`false` 回画面。
+    func setColorBar(device id: UUID, on: Bool) {
+        guard var state = states[id] else { return }
+        guard let itemName = maps[id]?.colorBarItem else {
+            appendLog(deviceLabel(id), "没有绑定彩条开关参数")
+            return
+        }
+
+        let left = state.colorBarCooldownLeft()
+        if left > 0 {
+            appendLog(deviceLabel(id), "彩条刚切过，等 \(Int(left.rounded(.up))) 秒再切（设备需要时间生效）")
+            return
+        }
+
+        guard let session = sessions[id],
+              let item = session.snapshot(for: [itemName])[itemName] else {
+            appendLog(deviceLabel(id), "读不到彩条参数，未下发")
+            return
+        }
+        if let reason = item.writeBlockReason {
+            appendLog(deviceLabel(id), "彩条参数不可写：\(reason)")
+            return
+        }
+
+        // 本地先反映，设备回读会再校正
+        state.colorBarOn = on
+        state.colorBarChangedAt = Date()
+        states[id] = state
+
+        if settings.dryRun {
+            appendLog(deviceLabel(id), "试运行：彩条 → \(on ? "开" : "关")（未下发）")
+            return
+        }
+
+        session.setValue(itemName: itemName, value: CCUItem.target(from: on ? 1 : 0))
+        appendLog(deviceLabel(id), "彩条 → \(on ? "开" : "关")")
+    }
+
+    func toggleColorBar(device id: UUID) {
+        let current = states[id]?.colorBarOn ?? false
+        setColorBar(device: id, on: !current)
+    }
+
+    /// 把某个参数绑成彩条开关（非 HDCU 机型、或想换参数时用）。
+    func bindColorBar(_ id: UUID, itemName: String) {
+        guard var map = maps[id] else { return }
+        map.colorBarItem = itemName
+        maps[id] = map
+        saveMaps()
+        rebuild(id)
+        appendLog(deviceLabel(id), "已把 \(itemName) 绑为彩条开关")
+    }
+
+    func unbindColorBar(_ id: UUID) {
+        guard var map = maps[id] else { return }
+        map.colorBarItem = nil
+        maps[id] = map
+        saveMaps()
+        rebuild(id)
+        appendLog(deviceLabel(id), "已解除彩条开关绑定")
     }
 
     // MARK: - 增益快照与回滚

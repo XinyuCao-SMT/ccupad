@@ -208,6 +208,7 @@ struct DiscoveryView: View {
         let map = activeDevice.map { manager.map($0) } ?? ParameterMap()
         let boundGain = map.hasGain(item.name)
         let boundTally = map.hasTally(item.name)
+        let boundColorBar = map.hasColorBar(item.name)
         let role = ItemClassifier.role(of: item.name)
 
         return HStack(alignment: .top, spacing: 10) {
@@ -225,6 +226,7 @@ struct DiscoveryView: View {
                     if !item.isReadOnly && !item.isWritable { Text("不可写（无量程/档位）").foregroundStyle(Theme.warning) }
                     if boundGain { Text("已绑增益").foregroundStyle(Theme.gainFill) }
                     if boundTally { Text("已绑 tally").foregroundStyle(Theme.preview) }
+                    if boundColorBar { Text("已绑彩条").foregroundStyle(Theme.warning) }
                 }
                 .font(.caption2)
                 .foregroundStyle(Color.secondary)
@@ -252,13 +254,17 @@ struct DiscoveryView: View {
                 Button("设为增益通道…") { beginBindGain(item) }
                 Button("设为 Tally PGM") { bindTally(item, .program) }
                 Button("设为 Tally PVW") { bindTally(item, .preview) }
-                if boundGain || boundTally {
+                Button("设为彩条开关") { bindColorBar(item) }
+                if boundGain || boundTally || boundColorBar {
                     Divider()
                     if boundGain {
                         Button("解除增益绑定", role: .destructive) { unbindGain(item) }
                     }
                     if boundTally {
                         Button("解除 tally 绑定", role: .destructive) { unbindTally(item) }
+                    }
+                    if boundColorBar {
+                        Button("解除彩条绑定", role: .destructive) { unbindColorBar(item) }
                     }
                 }
             } label: {
@@ -299,6 +305,17 @@ struct DiscoveryView: View {
         if manager.map(id).tallyPvwItem == item.name {
             manager.unbindTally(device: id, role: .preview)
         }
+    }
+
+    private func bindColorBar(_ item: CCUItem) {
+        guard let id = activeDevice else { return }
+        manager.bindColorBar(id, itemName: item.name)
+        message = L10n.f("已把 %@ 绑为彩条开关（1 = 出彩条，0 = 出画面）。主控台的格子上会出现「彩条 开/关」按钮。", item.name)
+    }
+
+    private func unbindColorBar(_ item: CCUItem) {
+        guard let id = activeDevice else { return }
+        manager.unbindColorBar(id)
     }
 
     private func exportInventory() {
