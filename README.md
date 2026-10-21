@@ -11,8 +11,8 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 > | | |
 > | --- | --- |
 > | 仓库 | <https://github.com/XinyuCao-SMT/ccupad> |
-> | 当前版本 | **0.8.0**（tag `v0.8.0-colorbar`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar)） |
-> | 归档产物 | `dist/v0.8.0-colorbar/CCUPad-v0.8.0-colorbar-unsigned.ipa`（656 KB，同目录有 SHA256 清单） |
+> | 当前版本 | **0.9.0**（tag `v0.9.0-barText`，[Release 永久下载](https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.9.0-barText)） |
+> | 归档产物 | `dist/v0.9.0-barText/CCUPad-v0.9.0-barText-unsigned.ipa`（662 KB，同目录有 SHA256 清单） |
 > | 图标 / 开发者 | 索尼 logo（源图 `artwork/sony-logo.jpg`，生成脚本 `tools/make-logo.py`）；开发者 **SMT-Xinyu Cao** |
 > | 随手产物 | `dist/ipa/CCUPad-unsigned.ipa`（每次云编译覆盖这一个，**别拿它当存档**） |
 >
@@ -46,11 +46,15 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 | 写入校验 | 每条写值都会等设备回推确认；没确认就自动重试一次，仍失败则标红并写日志（不会假装成功） |
 | 参数发现 | 读出设备全部约 3300 个参数，按名字搜索 / 按归类筛选 / 看实时值，并在这里把参数**绑定**成增益通道 / tally 来源 / 彩条开关 |
 | 参数清单导出 | 把某台设备的全部参数导成 TSV 落到「文件」App，方便存档或回传给开发核对 |
-| 装上即绑好（HDCU） | 连上并读完参数后，若这台设备**还没绑过任何东西**，自动套用**实测确认**的映射（话筒增益 2 路 + tally PGM·PVW），不用去发现页；已绑过的设备可以在参数发现页点「套用实测默认」一键换新 |
+| 装上即绑好（HDCU） | 连上并读完参数后，若这台设备**还没绑过任何东西**，自动套用**实测确认**的映射（话筒增益 2 路 + tally PGM·PVW + 彩条开关 + 彩条字符），不用去发现页；已绑过的设备可以在参数发现页点「套用实测默认」一键换新 |
 | **锁定其他项目** | 打开后主控台只剩**推子 + tally**，**参数发现 / 设备 / 设置**三页要输管理密码才出现。密码存 Keychain，解锁状态**不持久化**（重启回到锁定）；未设密码时不允许打开锁定 |
 | 安全默认 | **默认开启「试运行」**：所有操作照常走一遍并写日志，但一个字节都不发给设备 |
 
 界面四个页：**主控台**（调音）· **参数发现**（绑定）· **设备**（增删改 + 连接测试）· **设置**。
+
+**台数没有上限**：IP 规格（`10.205.1.101-108`、`10.205.1.1-200`、逗号混写）会全量展开，
+一屏几十台照常显示（网格是懒加载）。「连接全部」是**错峰发起**（每台间隔 200 ms）——
+几十台同时连会瞬间打满网络，每台都要走一次认证再把 3331 个参数吐回来。
 
 **版本号与开发者在「设置 → 关于」**：那里显示 logo、版本号（**从 App 包里读**，
 不在代码里硬编码）、构建号和开发者 SMT-Xinyu Cao。
@@ -83,6 +87,7 @@ SwiftUI，最低 **iPadOS 17.0**，**零外部依赖** —— HTTP Digest / WebS
 | **tally 播出（红 / PGM）** | `ItemTallyRStatus` | 0 / 1 |
 | **tally 预览（绿 / PVW）** | `ItemTallyGStatus` | 0 / 1 |
 | **彩条开关** | `ItemCameraIfColorBar` | 0 / 1（**1 = 出彩条，0 = 出画面**；另有 `TemporaryColorBar` 瞬时、`StartupBarState` 上电状态，别绑错） |
+| **彩条字符（显示在编号后）** | `ItemBarCharacterText1…16` | 可写字符串（≤34 字符）；App 只读。默认读第 2 行，实测那场 `Text2 = CAM31` |
 
 **⚠️ 一个容易踩的协议行为：设备下发的 `enum` 是「此刻可选」的候选，不是完整枚举域。**
 同一台设备的 `ItemMicGainCh1`：摄像机接上时档位表是 5 档 [20/30/40/50/60 dB]、当前值 `3001002`（=30 dB）；
