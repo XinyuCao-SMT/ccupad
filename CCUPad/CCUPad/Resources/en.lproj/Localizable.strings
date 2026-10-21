@@ -150,6 +150,27 @@
 "已保存管理密码" = "Admin password saved";
 "保存失败（Keychain 写入被拒绝）" = "Save failed (Keychain refused the write)";
 
+/* ── 两个主控台（音频 / 视频） ── */
+"音频" = "Audio";
+"视频" = "Video";
+"音频主控台" = "Audio Console";
+"视频主控台" = "Video Console";
+"全部彩条开" = "All Bars ON";
+"全部彩条关" = "All Bars OFF";
+"锁定视频台" = "Lock Video Console";
+"视频主控台需要密码" = "The Video Console is locked";
+"彩条会改画面，所以这一页单独上锁。密码就是「设置 → 安全」里那个管理密码。" = "Color bars change the picture, so this page is locked separately. Use the admin password from Settings → Security.";
+"输入密码解锁" = "Enter Password";
+"解锁视频主控台" = "Unlock Video Console";
+"解锁后才能看到彩条开关。解锁状态不会保留到下次启动。" = "Unlocks the color bar switches. The unlocked state is not kept across launches.";
+"密码不对" = "Wrong password";
+"彩条" = "Bars";
+"刚切过，等 2 秒让设备生效" = "Just switched — wait 2 s for the device to apply it";
+"这个参数现在不可写" = "This parameter is not writable right now";
+"未绑定彩条开关" = "No color bar switch bound";
+"到「参数发现」页把彩条开关参数绑上，或在那里点「套用实测默认」。" = "Bind the color bar parameter on the Parameters page, or tap Apply Verified Defaults there.";
+"到「设备」页填 IP 和密码，回这里点「连接全部」。" = "Enter IPs and passwords on the Devices page, then come back and tap Connect All.";
+
 /* ── 网络接口（Wi-Fi / 有线） ── */
 "走哪个网卡" = "Network interface";
 "自动（系统决定）" = "Automatic (system)";

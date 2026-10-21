@@ -28,7 +28,7 @@ struct DashboardView: View {
                 .padding(16)
             }
             .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("主控台")
+            .navigationTitle("音频主控台")
             .navigationBarTitleDisplayMode(.inline)
             .alert("确认批量下发", isPresented: $showBulkConfirm) {
                 Button("取消", role: .cancel) {

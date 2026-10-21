@@ -50,7 +50,7 @@ struct AdminUnlockSheet: View {
                         if manager.unlockAdmin(with: password) {
                             dismiss()
                         } else {
-                            errorText = "密码不对"
+                            errorText = L10n.t("密码不对")
                         }
                     }
                 }

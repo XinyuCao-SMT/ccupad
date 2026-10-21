@@ -39,10 +39,11 @@
 		CD0000000000000000000044 /* TallyLampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000043 /* TallyLampView.swift */; };
 		CD0000000000000000000046 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000045 /* Theme.swift */; };
 		CD0000000000000000000048 /* VerticalFaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000047 /* VerticalFaderView.swift */; };
+		CD000000000000000000004A /* VideoConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000049 /* VideoConsoleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CD000000000000000000004B /* CCUPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCUPad.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD000000000000000000004D /* CCUPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCUPad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0000000000000000000003 /* CCUPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUPadApp.swift; sourceTree = "<group>"; };
 		CD0000000000000000000006 /* CCUConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUConnection.swift; sourceTree = "<group>"; };
 		CD0000000000000000000008 /* CCUManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCUManager.swift; sourceTree = "<group>"; };
@@ -75,10 +76,11 @@
 		CD0000000000000000000043 /* TallyLampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TallyLampView.swift; sourceTree = "<group>"; };
 		CD0000000000000000000045 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		CD0000000000000000000047 /* VerticalFaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalFaderView.swift; sourceTree = "<group>"; };
+		CD0000000000000000000049 /* VideoConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoConsoleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CD0000000000000000000050 /* Frameworks */ = {
+		CD0000000000000000000052 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -88,18 +90,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CD000000000000000000004C = {
+		CD000000000000000000004E = {
 			isa = PBXGroup;
 			children = (
 				CD0000000000000000000001 /* CCUPad */,
-				CD000000000000000000004D /* Products */,
+				CD000000000000000000004F /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		CD000000000000000000004D /* Products */ = {
+		CD000000000000000000004F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CD000000000000000000004B /* CCUPad.app */,
+				CD000000000000000000004D /* CCUPad.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,6 +183,7 @@
 				CD0000000000000000000043 /* TallyLampView.swift */,
 				CD0000000000000000000045 /* Theme.swift */,
 				CD0000000000000000000047 /* VerticalFaderView.swift */,
+				CD0000000000000000000049 /* VideoConsoleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -202,13 +205,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CD000000000000000000004A /* CCUPad */ = {
+		CD000000000000000000004C /* CCUPad */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CD0000000000000000000052 /* Build configuration list for PBXNativeTarget "CCUPad" */;
+			buildConfigurationList = CD0000000000000000000054 /* Build configuration list for PBXNativeTarget "CCUPad" */;
 			buildPhases = (
-				CD000000000000000000004E /* Sources */,
-				CD0000000000000000000050 /* Frameworks */,
-				CD000000000000000000004F /* Resources */,
+				CD0000000000000000000050 /* Sources */,
+				CD0000000000000000000052 /* Frameworks */,
+				CD0000000000000000000051 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -218,25 +221,25 @@
 			packageProductDependencies = (
 			);
 			productName = CCUPad;
-			productReference = CD000000000000000000004B /* CCUPad.app */;
+			productReference = CD000000000000000000004D /* CCUPad.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		CD0000000000000000000049 /* Project object */ = {
+		CD000000000000000000004B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					CD000000000000000000004A = {
+					CD000000000000000000004C = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = CD0000000000000000000051 /* Build configuration list for PBXProject "CCUPad" */;
+			buildConfigurationList = CD0000000000000000000053 /* Build configuration list for PBXProject "CCUPad" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -245,20 +248,20 @@
 				Base,
 				"zh-Hans",
 			);
-			mainGroup = CD000000000000000000004C;
+			mainGroup = CD000000000000000000004E;
 			packageReferences = (
 			);
-			productRefGroup = CD000000000000000000004D /* Products */;
+			productRefGroup = CD000000000000000000004F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CD000000000000000000004A /* CCUPad */,
+				CD000000000000000000004C /* CCUPad */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		CD000000000000000000004F /* Resources */ = {
+		CD0000000000000000000051 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -271,7 +274,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		CD000000000000000000004E /* Sources */ = {
+		CD0000000000000000000050 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -304,13 +307,14 @@
 				CD0000000000000000000044 /* TallyLampView.swift in Sources */,
 				CD0000000000000000000046 /* Theme.swift in Sources */,
 				CD0000000000000000000048 /* VerticalFaderView.swift in Sources */,
+				CD000000000000000000004A /* VideoConsoleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		CD0000000000000000000053 /* Debug */ = {
+		CD0000000000000000000055 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
     ALWAYS_SEARCH_USER_PATHS = NO;
@@ -338,7 +342,7 @@
 			};
 			name = Debug;
 		};
-		CD0000000000000000000054 /* Release */ = {
+		CD0000000000000000000056 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
     ALWAYS_SEARCH_USER_PATHS = NO;
@@ -363,7 +367,7 @@
 			};
 			name = Release;
 		};
-		CD0000000000000000000055 /* Debug */ = {
+		CD0000000000000000000057 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
     ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -383,7 +387,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.10.0;
+    MARKETING_VERSION = 0.11.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;
@@ -393,7 +397,7 @@
 			};
 			name = Debug;
 		};
-		CD0000000000000000000056 /* Release */ = {
+		CD0000000000000000000058 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
     ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -413,7 +417,7 @@
     INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
     IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-    MARKETING_VERSION = 0.10.0;
+    MARKETING_VERSION = 0.11.0;
     PRODUCT_BUNDLE_IDENTIFIER = com.smt.ccupad;
     PRODUCT_NAME = "$(TARGET_NAME)";
     SWIFT_EMIT_LOC_STRINGS = YES;
@@ -426,16 +430,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CD0000000000000000000051 /* Build configuration list for PBXProject "CCUPad" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CD0000000000000000000053 /* Debug */,
-				CD0000000000000000000054 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CD0000000000000000000052 /* Build configuration list for PBXNativeTarget "CCUPad" */ = {
+		CD0000000000000000000053 /* Build configuration list for PBXProject "CCUPad" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD0000000000000000000055 /* Debug */,
@@ -444,8 +439,17 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		CD0000000000000000000054 /* Build configuration list for PBXNativeTarget "CCUPad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD0000000000000000000057 /* Debug */,
+				CD0000000000000000000058 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 	};
-	rootObject = CD0000000000000000000049 /* Project object */;
+	rootObject = CD000000000000000000004B /* Project object */;
 }

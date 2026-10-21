@@ -27,6 +27,11 @@ final class CCUManager: ObservableObject {
     /// 「其他项目」是否已解锁（**不持久化**，重启回到锁定）。
     @Published var adminUnlocked: Bool = false
 
+    /// 视频主控台是否已解锁（**不持久化**，重启回到锁定）。
+    /// 用的是同一个管理密码，但与「其他项目」的解锁状态**互相独立** ——
+    /// 音频岗开视频台不该顺带看到参数发现页，反之亦然。
+    @Published var videoUnlocked: Bool = false
+
     /// 是否已设置管理密码。缓存成 @Published：否则界面每次重绘都会去读一次 Keychain。
     @Published private(set) var adminPasswordPresent: Bool = false
 
@@ -1040,6 +1045,7 @@ final class CCUManager: ObservableObject {
         Keychain.deleteAdminPassword()
         adminPasswordPresent = false
         adminUnlocked = false
+        videoUnlocked = false
         settings.lockAdmin = false
         saveSettings()
         appendLog("安全", "已清除管理密码，并关闭「锁定其他项目」")
@@ -1071,5 +1077,38 @@ final class CCUManager: ObservableObject {
     /// 手动重新锁上（解完后想立刻收起）。
     func lockAdminNow() {
         adminUnlocked = false
+    }
+
+    // MARK: - 视频主控台的密码门
+    //
+    // 音频岗只该看音频；彩条会改画面，所以要密码。
+    // 和「其他项目」用**同一个管理密码**，但解锁状态独立。
+
+    /// 视频主控台能不能看：**没设管理密码时默认打开**（否则设密码之前就永远进不去）。
+    var videoConsoleAvailable: Bool {
+        !adminPasswordPresent || videoUnlocked
+    }
+
+    func unlockVideo(with password: String) -> Bool {
+        guard verifyAdminPassword(password) else { return false }
+        videoUnlocked = true
+        appendLog("安全", "已解锁视频主控台")
+        return true
+    }
+
+    func lockVideoNow() {
+        videoUnlocked = false
+    }
+
+    /// 全部彩条开 / 关（视频主控台用）。逐台下发，每台仍然受 2 秒冷却约束。
+    func setAllColorBars(on: Bool) {
+        let targets = devices.filter { $0.enabled && state($0.id).status.isConnected }
+        guard !targets.isEmpty else {
+            appendLog("彩条", "没有已连接的设备")
+            return
+        }
+        for device in targets {
+            setColorBar(device: device.id, on: on)
+        }
     }
 }
