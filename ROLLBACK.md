@@ -19,7 +19,8 @@
 
 | 版本 | 提交 | Tag | 内容 | IPA |
 | --- | --- | --- | --- | --- |
-| **v0.10.0 网卡版**<br>（当前，推荐装） | 本地 `be8e70b`<br>远端 `4d0a677` | `v0.10.0-interface` | **可选网卡**：自动 / 仅 Wi-Fi / 仅有线以太网（`NWParameters.requiredInterfaceType`），**Digest 认证与控制通道走同一张**；指定网卡不存在时直接失败不改道；设置页显示当前可用网卡；`AppSettings` 改为手写解码（缺字段取默认，升级不丢设置） | `dist/v0.10.0-interface/CCUPad-v0.10.0-interface-unsigned.ipa`（677 KB） |
+| **v0.11.0 双台面版**<br>（当前，推荐装） | 本地 `dc2cdab`<br>远端 `617355a` | `v0.11.0-consoles` | **拆成音频主控台与视频主控台**：音频台只有推子/tally，视频台只有彩条；**视频台要管理密码**（同一密码，解锁状态与「其他项目」独立，不持久化，没设密码时默认开）；视频台每台一个大彩条按钮 + 全部彩条开/关（逐台下发、每台仍 2 秒冷却） | `dist/v0.11.0-consoles/CCUPad-v0.11.0-consoles-unsigned.ipa`（714 KB） |
+| v0.10.0 网卡版 | 本地 `be8e70b`<br>远端 `4d0a677` | `v0.10.0-interface` | **可选网卡**：自动 / 仅 Wi-Fi / 仅有线以太网（`NWParameters.requiredInterfaceType`），**Digest 认证与控制通道走同一张**；指定网卡不存在时直接失败不改道；`AppSettings` 改为手写解码（缺字段取默认，升级不丢设置） | `dist/v0.10.0-interface/CCUPad-v0.10.0-interface-unsigned.ipa`（677 KB） |
 | v0.9.0 多台版 | 本地 `e162e5f`<br>远端 `3f015e7` | `v0.9.0-barText` | **确认无台数上限**并把几十台做成可用：连接改为**错峰发起**（200 ms/台）、IP 排序改为**按整段 IP**；**彩条字符** `ItemBarCharacterText2` 只读，显示在主控台**CCU 编号后面**（可绑 1…16 任一行） | `dist/v0.9.0-barText/CCUPad-v0.9.0-barText-unsigned.ipa`（662 KB） |
 | v0.8.0 彩条版 | 本地 `49ebf6b`<br>远端 `7e2a427` | `v0.8.0-colorbar` | **彩条开关**：`ItemCameraIfColorBar`（1=彩条 0=画面），主控台每台格子底部一个「彩条 开/关」按钮；照抄 ccu-studio 的**2 秒冷却**（设备约 1 秒才生效、连点会乱）；参数发现页可手工绑定/解绑 | `dist/v0.8.0-colorbar/CCUPad-v0.8.0-colorbar-unsigned.ipa`（656 KB） |
 | v0.7.0 图标版 | 本地 `9bb4253`<br>远端 `b7d2a94` | `v0.7.0-logo` | **App 图标换成索尼 logo**（+ 关于页 logo）；关于页显示**版本号（从包里读）+ 开发者 SMT-Xinyu Cao**；新增资源检查与 5 项包结构校验（图标 PNG / Assets.car / .lproj） | `dist/v0.7.0-logo/CCUPad-v0.7.0-logo-unsigned.ipa`（648 KB） |
@@ -66,6 +67,7 @@ API 重放会**新建提交对象**，所以远端提交的 SHA 与本地**不�
 1. 用 **Sideloadly** 装想要的版本，例如
    `dist/v0.2.0-gain-tally/CCUPad-v0.2.0-gain-tally-unsigned.ipa`
 2. 或从 GitHub Release 下载（**永久有效**，不受工件 30 天限制）：
+   * v0.11.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.11.0-consoles>
    * v0.10.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.10.0-interface>
    * v0.9.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.9.0-barText>
    * v0.8.0 <https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar>
@@ -120,6 +122,7 @@ E:\harness\_backup\build-records.txt                          ← 各版本：�
 
 | 文件 | 大小 | SHA256（前 16 位，完整值见 `MANIFEST.txt`） |
 | --- | --- | --- |
+| `CCUPad-v0.11.0-consoles-unsigned.ipa` | 714 KB | `20869FC630D060BE…` |
 | `CCUPad-v0.10.0-interface-unsigned.ipa` | 677 KB | `6812E1AFF37C91B6…` |
 | `CCUPad-v0.9.0-barText-unsigned.ipa` | 662 KB | `365C1C5C16F8C175…` |
 | `CCUPad-v0.8.0-colorbar-unsigned.ipa` | 656 KB | `9EB0BD6BE9692447…` |
@@ -131,7 +134,7 @@ E:\harness\_backup\build-records.txt                          ← 各版本：�
 | `CCUPad-v0.2.0-gain-tally-unsigned.ipa` | 461 KB | `3C7B699C8518E8EE…` |
 
 ```powershell
-Get-FileHash .\dist\v0.10.0-interface\CCUPad-v0.10.0-interface-unsigned.ipa -Algorithm SHA256
+Get-FileHash .\dist\v0.11.0-consoles\CCUPad-v0.11.0-consoles-unsigned.ipa -Algorithm SHA256
 ```
 
 `MANIFEST.txt` 里还有逐项的 IPA 结构校验结果（arm64 / `CFBundleShortVersionString` = 对应版本 /
@@ -153,10 +156,12 @@ Get-FileHash .\dist\v0.10.0-interface\CCUPad-v0.10.0-interface-unsigned.ipa -Alg
 | v0.7.0-logo | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/37761471390> |
 | v0.8.0-colorbar | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39558450999> |
 | v0.9.0-barText | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39559003730> |
-| **v0.10.0-interface** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39559994413> |
+| v0.10.0-interface | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39559994413> |
+| **v0.11.0-consoles** | <https://github.com/XinyuCao-SMT/ccupad/actions/runs/39560871326> |
 
 各版本的 IPA 都已挂到对应 Release 的附件里，**永久可下载**：
 
+* v0.11.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.11.0-consoles>
 * v0.10.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.10.0-interface>
 * v0.9.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.9.0-barText>
 * v0.8.0：<https://github.com/XinyuCao-SMT/ccupad/releases/tag/v0.8.0-colorbar>
