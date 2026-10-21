@@ -319,7 +319,7 @@ final class CCUManager: ObservableObject {
                                    path: "/",
                                    headers: ["Authorization": auth],
                                    timeout: 8,
-                                   interface: settings.interfaceChoice) { second in
+                                   interface: self.settings.interfaceChoice) { second in
                         DispatchQueue.main.async {
                             switch second {
                             case .failure(let error):
